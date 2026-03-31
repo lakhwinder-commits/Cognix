@@ -1,1 +1,1 @@
-web: gunicorn cognix.wsgi
+web: gunicorn cognix.wsgi:application --bind 0.0.0.0:8000
