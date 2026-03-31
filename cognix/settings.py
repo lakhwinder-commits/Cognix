@@ -132,10 +132,13 @@ TEMPLATES = [
         'APP_DIRS': True,  # Look for templates in app directories (e.g., main/templates)
         'OPTIONS': {
             'context_processors': [
+
                 'django.template.context_processors.debug',     # Adds debug info
                 'django.template.context_processors.request',   # Adds the request object
                 'django.contrib.auth.context_processors.auth',  # Adds user object
                 'django.contrib.messages.context_processors.messages',  # Adds messages
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
