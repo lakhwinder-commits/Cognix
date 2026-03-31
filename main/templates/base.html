@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Cognix | AI Campus Companion — Chandigarh University</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<!-- PRELOADER (1200ms) -->
+<div class="preloader" id="preloader">
+    <img class="preloader-logo" src="{% static 'assets/logo.png' %}" alt="Cognix Logo">
+</div>
+
+<div class="bg-glow"></div>
+
+<!-- HEADER -->
+<header class="top-nav">
+    <div class="nav-container">
+        <div class="brand">
+            <img class="brand-logo-img" src="{% static 'assets/logo.png' %}" alt="Cognix Logo">
+            <span class="tagline">Limitless Intelligence</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+        <div class="nav-buttons">
+            <button class="btn-outline-light" id="loginBtn">Login</button>
+            <button class="btn-primary-grad" id="getStartedNav">Get Started</button>
+        </div>
+    </div>
+</header>
+
+{% block content %}{% endblock %}
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <img class="footer-logo-img" src="{% static 'assets/logo.png' %}" alt="Cognix Logo">
+            <span style="font-weight: 800; background: linear-gradient(135deg,#ff006e,#ffb347); -webkit-background-clip:text; background-clip:text; color:transparent;">Cognix AI</span>
+        </div>
+        <div class="footer-links">
+            <a href="/about">About</a>
+            <a href="/about">Contact</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+        </div>
+    </div>
+    <div class="copyright">© 2026 Cognix — Chandigarh University AI Campus Companion. All rights reserved.</div>
+</footer>
+
+<!-- Floating Chat Button (redirects to dedicated chat page) -->
+<div class="chat-floating">
+    <button class="chat-toggle" id="floatingChatBtn"><i class="fas fa-comment-dots"></i></button>
+</div>
+
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
