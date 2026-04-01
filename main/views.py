@@ -90,6 +90,7 @@ def save_message(request):
 
     msg = Message.objects.create(
         conversation=conv,
+        user=request.user,
         role=data["role"],
         content=data["content"]
     )

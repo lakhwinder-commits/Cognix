@@ -8,8 +8,7 @@ class ConversationAdmin(admin.ModelAdmin):
 
 
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'conversation', 'role', 'content', 'timestamp')
-
-
+    list_display = ('id', 'user', 'conversation', 'role', 'content', 'timestamp')
+    
 admin.site.register(Conversation, ConversationAdmin)
 admin.site.register(Message, MessageAdmin)
