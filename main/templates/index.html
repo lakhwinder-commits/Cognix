@@ -727,15 +727,18 @@
         <div class="nav-buttons">
             {% if user.is_authenticated %}
             <div class="user-profile">
-                {% if user.social_auth.all %}
                 <div class="avatar-wrapper">
-                    <img src="{{ user.social_auth.all.0.extra_data.picture|cut:'=s96-c' }}=s200-c" class="nav-avatar" alt="Profile">
+                    {% if user.social_auth.all and user.social_auth.all.0.extra_data.picture %}
+                    <img src="{{ user.social_auth.all.0.extra_data.picture }}" 
+                        class="nav-avatar" 
+                        alt="Profile"
+                        referrerpolicy="no-referrer">
+                    {% else %}
+                    <img src="{% static 'assets/default-avatar.png' %}" 
+                         class="nav-avatar" 
+                         alt="Profile">
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="avatar-wrapper">
-                    <img src="{% static 'assets/default-avatar.png' %}" class="nav-avatar" alt="Profile">
-                </div>
-                {% endif %}
                 <span>{{ user.first_name }}</span>
                 <form action="/logout/" method="POST" style="display:inline;">
                     {% csrf_token %}
