@@ -27,7 +27,8 @@
 
         html, body {
             height: 100%;
-            overflow: hidden;
+            overflow-y: auto;  /* ✅ allow scroll */
+            overflow-x: hidden;
         }
 
         body {
@@ -102,8 +103,8 @@
             background: rgba(5, 7, 14, 0.95);
         }
         .nav-container {
-            max-width: 1300px;
-            margin: 0 auto;
+            width: 100%;
+            padding: 0 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
