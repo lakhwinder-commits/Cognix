@@ -24,6 +24,12 @@ def logout_view(request):
 def save_google_avatar(backend, user, response, *args, **kwargs):
     if backend.name == 'google-oauth2':
         picture = response.get('picture')
+
         if picture:
-            user.profile.avatar = picture
-            user.profile.save()
+            from .models import Profile
+
+            
+            profile, created = Profile.objects.get_or_create(user=user)
+
+            profile.avatar = picture
+            profile.save()
