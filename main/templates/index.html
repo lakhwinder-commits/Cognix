@@ -698,7 +698,12 @@
 <img src="{% static 'assets/default-avatar.png' %}" class="nav-avatar">
 {% endif %}
                 <span>{{ user.first_name }}</span>
-                <a href="/logout/" style="font-size:0.8rem; color:#ff006e;">Logout</a>
+                <form action="/logout/" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none;border:none;color:#ff006e;cursor:pointer;">
+                        Logout
+                    </button>
+                </form>
             </div>
             {% else %}
             <a href="/login/" class="btn-outline-light">Login</a>
