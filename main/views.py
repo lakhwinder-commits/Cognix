@@ -33,3 +33,70 @@ def save_google_avatar(backend, user, response, *args, **kwargs):
 
             profile.avatar = picture
             profile.save()
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+import json
+
+from .models import Conversation, Message
+
+
+@login_required
+def get_conversations(request):
+    convs = Conversation.objects.filter(user=request.user).order_by('-created_at')
+
+    data = []
+    for c in convs:
+        data.append({
+            "id": c.id,
+            "title": c.title
+        })
+
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+def get_messages(request, conv_id):
+    conv = Conversation.objects.get(id=conv_id, user=request.user)
+
+    messages = conv.messages.all().order_by('timestamp')
+    data = [
+        {
+            "role": m.role,
+            "content": m.content,
+            "timestamp": m.timestamp.timestamp() * 1000
+        }
+        for m in messages
+    ]
+
+    return JsonResponse(data, safe=False)
+
+
+@csrf_exempt
+@login_required
+def create_conversation(request):
+    conv = Conversation.objects.create(user=request.user)
+    return JsonResponse({"id": conv.id})
+
+
+@csrf_exempt
+@login_required
+def save_message(request):
+    data = json.loads(request.body)
+
+    conv = Conversation.objects.get(id=data["conversation_id"], user=request.user)
+
+    msg = Message.objects.create(
+        conversation=conv,
+        role=data["role"],
+        content=data["content"]
+    )
+
+    # update title if first message
+    if conv.title == "New Chat" and data["role"] == "user":
+        conv.title = data["content"][:30]
+        conv.save()
+
+    return JsonResponse({"status": "ok"})

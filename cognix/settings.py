@@ -156,12 +156,8 @@ WSGI_APPLICATION = 'cognix.wsgi.application'
 # Defaults to SQLite for local development if DATABASE_URL is not set.
 # conn_max_age=600 enables persistent database connections for better performance.
 DATABASES = {
-    'default': dj_database_url.parse(
-        os.getenv("DATABASE_URL", "sqlite:///db.sqlite3"),
-        conn_max_age=600
-    )
+    'default': dj_database_url.config(default=os.environ.get("DATABASE_URL"))
 }
-
 # =============================================================================
 # Authentication & Password Validation
 # =============================================================================

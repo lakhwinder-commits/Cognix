@@ -26,7 +26,11 @@ urlpatterns = [
     path('chat/', views.chat),
     path('gamezone/', views.gamezone, name='gamezone'),
     path('tools/', views.tools, name='tools'),
-    path('login/', views.login, name='tools'),
+    path('login/', views.login, name='login'),
     path('auth/', include('social_django.urls', namespace='social')),
-    path('logout/', views.logout_view, name='logout')
+    path('logout/', views.logout_view, name='logout'),
+    path("api/conversations/", views.get_conversations),
+    path("api/messages/<int:conv_id>/", views.get_messages),
+    path("api/create-conversation/", views.create_conversation),
+    path("api/save-message/", views.save_message)
 ]

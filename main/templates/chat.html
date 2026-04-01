@@ -12,19 +12,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-        .nav-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 2px solid #ff006e;
-}
-
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-}
 
         :root {
             --bg-deep: #0a0c12;
@@ -98,14 +85,160 @@
             100% { filter: drop-shadow(0 0 14px rgba(255, 0, 110, 0.4)); }
         }
 
-        /* ========== LAYOUT ========== */
+        /* ========== HEADER (identical to index) ========== */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            backdrop-filter: blur(20px);
+            background: rgba(8, 10, 18, 0.85);
+            z-index: 1100;
+            padding: 0.9rem 2rem;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
+        }
+        .top-nav:hover {
+            background: rgba(5, 7, 14, 0.95);
+        }
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .brand-logo-img {
+            height: 56px;
+            width: auto;
+            max-width: 180px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 8px rgba(255,0,110,0.5));
+            transition: all 0.3s ease;
+        }
+        .brand-logo-img:hover {
+            transform: scale(1.03);
+            filter: drop-shadow(0 0 15px rgba(255,0,110,0.9));
+        }
+        .tagline {
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ff006e, #ffb347);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 0.5px;
+            border-left: 1px solid rgba(255,0,110,0.4);
+            padding-left: 0.8rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            position: relative;
+            padding-bottom: 6px;
+            letter-spacing: 0.3px;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff006e, #ffb347);
+            transition: width 0.3s ease;
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        .nav-links a:hover {
+            color: white;
+            text-shadow: 0 0 3px rgba(255,0,110,0.5);
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .btn-outline-light {
+            background: transparent;
+            border: 1px solid rgba(255,0,110,0.6);
+            padding: 0.55rem 1.3rem;
+            border-radius: 40px;
+            color: #ff006e;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 5px rgba(255,0,110,0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-outline-light:hover {
+            background: rgba(255,0,110,0.2);
+            border-color: #ff006e;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,0,110,0.4);
+        }
+        .btn-primary-grad {
+            background: linear-gradient(115deg, #ff006e, #8338ec);
+            border: none;
+            padding: 0.55rem 1.6rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(255, 0, 110, 0.4);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-primary-grad::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-primary-grad:hover::before {
+            left: 100%;
+        }
+        .btn-primary-grad:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 0, 110, 0.6);
+        }
+
+        /* ========== CHAT LAYOUT (adjusted for fixed navbar) ========== */
         .chat-app {
             display: flex;
             height: 100vh;
             width: 100%;
+            padding-top: 70px; /* prevent navbar overlap */
         }
 
-        /* SIDEBAR */
+        /* Sidebar same as before */
         .sidebar {
             width: 260px;
             background: rgba(12, 16, 24, 0.5);
@@ -116,7 +249,8 @@
             padding: 1.5rem 0;
         }
 
-        /* Top-left branding */
+        /* Top-left branding inside sidebar now matches header? We keep original sidebar brand, but header already has logo. */
+        /* We'll keep sidebar brand for consistency but maybe adjust? We'll keep original design. */
         .brand {
             padding: 0 1.2rem 1.5rem;
             border-bottom: 1px solid var(--border-subtle);
@@ -137,19 +271,16 @@
             font-size: 1.1rem;
             letter-spacing: -0.2px;
         }
-        /* Tagline – pixel-perfect alignment */
         .brand-tagline {
             font-size: 0.75rem;
             font-weight: 600;
             letter-spacing: 0.4px;
             margin-top: 4px;
-            margin-left: 42px; /* final polish */
-            padding-left: 0;
+            margin-left: 42px;
             background: linear-gradient(135deg, #ff006e, #ffb347);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: none;
         }
 
         .new-chat-btn {
@@ -309,7 +440,7 @@
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            max-width: 72%; /* improved breathing room */
+            max-width: 72%;
             animation: fadeSlide 0.25s ease;
         }
         .message-wrapper.user {
@@ -544,7 +675,7 @@
         /* Mobile menu toggle */
         .menu-toggle {
             position: absolute;
-            top: 16px;
+            top: 85px; /* below navbar */
             left: 16px;
             z-index: 50;
             display: none;
@@ -575,9 +706,53 @@
                 transition: left 0.2s ease;
                 z-index: 100;
                 background: rgba(8, 10, 18, 0.95);
+                top: 70px;
+                height: calc(100vh - 70px);
             }
             .sidebar.open { left: 0; }
             .message-wrapper { max-width: 85%; }
+        }
+
+        /* Avatar styles (glow wrapper) */
+        .avatar-wrapper {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+        }
+        .avatar-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            filter: blur(6px);
+            z-index: 0;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        .avatar-wrapper:hover::after {
+            opacity: 1;
+        }
+        .nav-avatar {
+            position: relative;
+            z-index: 1;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid #ff006e;
+            object-fit: cover;
+            box-shadow: 0 0 10px rgba(255, 0, 110, 0.6);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .avatar-wrapper:hover .nav-avatar {
+            transform: scale(1.08);
+            box-shadow: 0 0 18px rgba(255, 0, 110, 0.9);
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -588,6 +763,47 @@
 <div class="preloader" id="preloader">
     <img class="preloader-logo" src="{% static 'assets/logo.png' %}" alt="Cognix">
 </div>
+
+<!-- HEADER (identical to index) -->
+<header class="top-nav">
+    <div class="nav-container">
+        <div class="brand">
+            <img class="brand-logo-img" src="{% static 'assets/logo.png' %}" alt="Cognix Logo">
+            <span class="tagline">Limitless Intelligence</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/gamezone">Gamezone</a></li>
+            <li><a href="/tools">Tools</a></li>
+            <li><a href="/#pricing">Pricing</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+        <div class="nav-buttons">
+            {% if user.is_authenticated %}
+            <div class="user-profile">
+                <div class="avatar-wrapper">
+                    {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar }}" class="nav-avatar" alt="Profile">
+                    {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ user.first_name|urlencode }}&background=ff006e&color=fff&bold=true&size=42" class="nav-avatar" alt="Profile">
+                    {% endif %}
+                </div>
+                <span>{{ user.first_name }}</span>
+                <form action="/logout/" method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background:none;border:none;color:#ff006e;cursor:pointer;">
+                        Logout
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <a href="/login/" class="btn-outline-light">Login</a>
+            {% endif %}
+            <button class="btn-primary-grad" id="getStartedNav">Get Started</button>
+        </div>
+    </div>
+</header>
 
 <div class="chat-app">
     <aside class="sidebar" id="sidebar">
@@ -610,7 +826,7 @@
     <main class="main-chat">
         <div class="chat-messages" id="chatMessages">
             <div class="empty-state" id="emptyState">
-                <img class="empty-logo" src="file:///C:/Users/lakhw/OneDrive/Desktop/logo.png" alt="Cognix">
+                <img class="empty-logo" src="{% static 'assets/logo.png' %}" alt="Cognix">
                 <h2>How can I help you today?</h2>
                 <p>Ask about courses, coding, exams, or campus life.</p>
                 <div class="suggestion-chips">
@@ -633,43 +849,162 @@
 </div>
 
 <script>
-    // ---------- User data ----------
-    const currentUser = { name: "Laksh" };
-    function getUserInitial() {
-        return currentUser.name ? currentUser.name.charAt(0).toUpperCase() : "U";
+    // ---------- REAL USER DATA from Django ----------
+    const userData = {
+        firstName: "{{ user.first_name|default:'Guest'|escapejs }}",
+        isAuthenticated: {{ user.is_authenticated|yesno:"true,false" }},
+        avatar: "{% if user.profile.avatar %}{{ user.profile.avatar }}{% else %}https://ui-avatars.com/api/?name={{ user.first_name|urlencode }}&background=ff006e&color=fff&bold=true&size=42{% endif %}"
+    };
+
+    // If user is not authenticated, redirect to login
+    if (!userData.isAuthenticated) {
+        window.location.href = "/login/";
     }
 
-    // ---------- NO LOCAL STORAGE – fresh state every time ----------
+    function getUserInitial() {
+        if (userData.isAuthenticated && userData.firstName && userData.firstName !== "Guest") {
+            return userData.firstName.charAt(0).toUpperCase();
+        }
+        return "U";
+    }
+
+    // ---------- CSRF Helper ----------
+    function getCSRFToken() {
+        const match = document.cookie.match(/csrftoken=([^;]+)/);
+        return match ? match[1] : '';
+    }
+
+    // ---------- Global state ----------
     let conversations = {};
     let currentId = null;
 
-    function generateId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 6); }
+    // ---------- API Calls ----------
+    async function loadConversations() {
+        try {
+            const res = await fetch('/api/conversations/');
+            const data = await res.json();
 
-    function createNewConversation() {
-        const id = generateId();
-        conversations[id] = { id, title: "New Chat", messages: [] };
-        currentId = id;
-        renderSidebar();
-        renderCurrentChat();
-        return id;
+            conversations = {};
+            data.forEach(conv => {
+                conversations[conv.id] = {
+                    id: conv.id,
+                    title: conv.title,
+                    messages: []
+                };
+            });
+            renderSidebar();
+            // Select the first conversation if any, otherwise create a new one
+            const ids = Object.keys(conversations);
+            if (ids.length > 0) {
+                currentId = ids[0];
+                await loadMessagesForConversation(currentId);
+            } else {
+                await createNewConversation();
+            }
+            renderCurrentChat();
+        } catch (err) {
+            console.error('Error loading conversations:', err);
+            // Fallback: create a new conversation if API fails
+            await createNewConversation();
+        }
     }
 
-    // Central addMessage – now includes timestamp
-    function addMessage(role, content, timestamp = Date.now()) {
-        if (!currentId || !conversations[currentId]) createNewConversation();
+    async function createNewConversation() {
+        try {
+            const res = await fetch('/api/create-conversation/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRFToken() }
+            });
+            const data = await res.json();
+            const id = data.id;
+            conversations[id] = { id, title: "New Chat", messages: [] };
+            currentId = id;
+            renderSidebar();
+            renderCurrentChat();
+            return id;
+        } catch (err) {
+            console.error('Error creating conversation:', err);
+            // Fallback: local id if API fails (should not happen in production)
+            const id = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+            conversations[id] = { id, title: "New Chat", messages: [] };
+            currentId = id;
+            renderSidebar();
+            renderCurrentChat();
+            return id;
+        }
+    }
+
+    async function loadMessagesForConversation(convId) {
+        try {
+            const res = await fetch(`/api/messages/${convId}/`);
+            const msgs = await res.json();
+            if (conversations[convId]) {
+                conversations[convId].messages = msgs;
+            }
+            renderCurrentChat();
+        } catch (err) {
+            console.error('Error loading messages:', err);
+        }
+    }
+
+    async function saveMessage(convId, role, content) {
+        try {
+            await fetch('/api/save-message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    conversation_id: convId,
+                    role: role,
+                    content: content
+                })
+            });
+        } catch (err) {
+            console.error('Error saving message:', err);
+        }
+    }
+
+    async function updateConversationTitle(convId, newTitle) {
+        try {
+            await fetch('/api/update-conversation-title/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+                body: JSON.stringify({
+                    conversation_id: convId,
+                    title: newTitle
+                })
+            });
+        } catch (err) {
+            console.error('Error updating title:', err);
+        }
+    }
+
+    // ---------- Local UI helpers ----------
+    async function addMessage(role, content, timestamp = Date.now()) {
+        if (!currentId) {
+            await createNewConversation();
+        }
         const conv = conversations[currentId];
         conv.messages.push({ role, content, timestamp });
         // Update title if this is the first user message
         if (role === 'user' && conv.title === "New Chat") {
-            conv.title = content.length > 30 ? content.slice(0, 27) + "…" : content;
+            const newTitle = content.length > 30 ? content.slice(0, 27) + "…" : content;
+            conv.title = newTitle;
+            await updateConversationTitle(currentId, newTitle);
             renderSidebar();
         }
+        // Save message to database
+        await saveMessage(currentId, role, content);
         renderCurrentChat();
         renderSidebar();
         scrollToBottom();
     }
 
-    // Streaming AI response with optimized scroll (every 3 chars) and smoother 16ms delay
     async function streamAIResponse(userMsg, targetBubbleElement) {
         const fullResponse = getAIResponse(userMsg);
         let currentText = "";
@@ -677,9 +1012,8 @@
         for (let i = 0; i < chars.length; i++) {
             currentText += chars[i];
             targetBubbleElement.innerText = currentText;
-            // Scroll only every 3 characters to reduce reflows
             if (i % 3 === 0) scrollToBottom();
-            await new Promise(r => setTimeout(r, 16)); // smoother 60fps feel
+            await new Promise(r => setTimeout(r, 16));
         }
         return fullResponse;
     }
@@ -706,11 +1040,10 @@
             const text = input.value.trim();
             if (!text) return;
 
-            addMessage('user', text);
+            await addMessage('user', text);
             input.value = '';
             input.style.height = 'auto';
 
-            // Show typing indicator
             const container = document.getElementById('messageList');
             const typingWrapper = document.createElement('div');
             typingWrapper.className = 'typing-wrapper';
@@ -721,7 +1054,6 @@
             container.appendChild(typingWrapper);
             scrollToBottom();
 
-            // Prepare final AI message bubble
             const wrapper = document.createElement('div');
             wrapper.className = `message-wrapper bot`;
             const aiAvatar = document.createElement('div');
@@ -742,7 +1074,6 @@
 
             const finalContent = await streamAIResponse(text, bubble);
 
-            // Add copy button
             const copyBtn = document.createElement('button');
             copyBtn.className = 'copy-btn';
             copyBtn.innerHTML = '<i class="far fa-copy"></i>';
@@ -754,7 +1085,6 @@
             });
             bubble.appendChild(copyBtn);
 
-            // Add timestamp – standardised format
             const timestamp = Date.now();
             const timeSpan = document.createElement('div');
             timeSpan.className = 'timestamp';
@@ -762,12 +1092,11 @@
             timeSpan.innerText = safeTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
             bubbleWrapper.appendChild(timeSpan);
 
-            // Save to conversation
+            // Save AI response directly (without double saving)
             const conv = conversations[currentId];
-            if (finalContent.trim()) {
-                conv.messages.push({ role: 'assistant', content: finalContent, timestamp });
-            }
-            renderSidebar(); // update sidebar
+            conv.messages.push({ role: 'assistant', content: finalContent, timestamp });
+            await saveMessage(currentId, 'assistant', finalContent);
+            renderCurrentChat();
         } catch (err) {
             console.error('Error in sendMessage:', err);
         } finally {
@@ -815,7 +1144,6 @@
                 bubble.appendChild(copyBtn);
             }
             bubbleWrapper.appendChild(bubble);
-            // Standardised timestamp formatting
             const timestamp = msg.timestamp;
             const safeDate = timestamp ? new Date(timestamp) : new Date();
             const timeSpan = document.createElement('div');
@@ -850,18 +1178,19 @@
             item.className = 'history-item';
             if (currentId === conv.id) item.classList.add('active');
             item.innerHTML = `<i class="far fa-comment"></i><span>${conv.title}</span>`;
-            item.onclick = () => {
+            item.onclick = async () => {
                 currentId = conv.id;
+                await loadMessagesForConversation(currentId);
                 renderSidebar();
-                renderCurrentChat();
                 if (window.innerWidth <= 780) document.getElementById('sidebar').classList.remove('open');
             };
             historyDiv.appendChild(item);
         });
     }
 
-    // Initialize fresh state (no localStorage)
-    createNewConversation();
+    // ---------- Initialization ----------
+    // Load conversations from backend, which will create a new one if none exist
+    loadConversations();
 
     // Input handling
     const textarea = document.getElementById('messageInput');
@@ -876,9 +1205,10 @@
         }
     });
 
-    // Event listeners
     document.getElementById('sendBtn').addEventListener('click', sendMessage);
-    document.getElementById('newChatBtn').addEventListener('click', () => createNewConversation());
+    document.getElementById('newChatBtn').addEventListener('click', async () => {
+        await createNewConversation();
+    });
     document.querySelectorAll('.chip').forEach(chip => {
         chip.addEventListener('click', () => {
             const suggestion = chip.getAttribute('data-suggestion');
@@ -904,10 +1234,8 @@
         }
     });
 
-    // Auto-focus input
     textarea.focus();
 
-    // Preloader duration 1200ms
     const preloader = document.getElementById('preloader');
     setTimeout(() => {
         preloader.classList.add('fade-out');
