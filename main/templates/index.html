@@ -86,7 +86,7 @@
                 filter: drop-shadow(0 0 0px rgba(255, 0, 110, 0.4));
             }
             100% {
-                filter: drop-shadow(0 0 20px rgba(255, 0, 110, 0.6)); /* refined */
+                filter: drop-shadow(0 0 20px rgba(255, 0, 110, 0.6));
             }
         }
 
@@ -219,6 +219,8 @@
             cursor: pointer;
             transition: all 0.25s ease;
             box-shadow: 0 0 5px rgba(255,0,110,0.3);
+            text-decoration: none;
+            display: inline-block;
         }
         .btn-outline-light:hover {
             background: rgba(255,0,110,0.2);
@@ -239,6 +241,9 @@
             box-shadow: 0 4px 15px rgba(255, 0, 110, 0.4);
             position: relative;
             overflow: hidden;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
         .btn-primary-grad::before {
             content: '';
@@ -556,13 +561,43 @@
             align-items: center;
             gap: 1rem;
         }
+        
+        /* Enhanced avatar styling with wrapper for glow ring */
+        .avatar-wrapper {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+        }
+        .avatar-wrapper::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            filter: blur(6px);
+            z-index: 0;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        .avatar-wrapper:hover::after {
+            opacity: 1;
+        }
         .nav-avatar {
-            width: 36px;
-            height: 36px;
+            position: relative;
+            z-index: 1;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             border: 2px solid #ff006e;
+            object-fit: cover;
+            box-shadow: 0 0 10px rgba(255, 0, 110, 0.6);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-
+        .avatar-wrapper:hover .nav-avatar {
+            transform: scale(1.08);
+            box-shadow: 0 0 18px rgba(255, 0, 110, 0.9);
+        }
+        
         .user-profile {
             display: flex;
             align-items: center;
@@ -693,10 +728,14 @@
             {% if user.is_authenticated %}
             <div class="user-profile">
                 {% if user.social_auth.all %}
-<img src="{{ user.social_auth.all.0.extra_data.picture }}" class="nav-avatar">
-{% else %}
-<img src="{% static 'assets/default-avatar.png' %}" class="nav-avatar">
-{% endif %}
+                <div class="avatar-wrapper">
+                    <img src="{{ user.social_auth.all.0.extra_data.picture|cut:'=s96-c' }}=s200-c" class="nav-avatar" alt="Profile">
+                </div>
+                {% else %}
+                <div class="avatar-wrapper">
+                    <img src="{% static 'assets/default-avatar.png' %}" class="nav-avatar" alt="Profile">
+                </div>
+                {% endif %}
                 <span>{{ user.first_name }}</span>
                 <form action="/logout/" method="POST" style="display:inline;">
                     {% csrf_token %}
@@ -861,7 +900,6 @@
     document.getElementById('floatingChatBtn')?.addEventListener('click', redirectToChat);
 
     // Other interactions
-
     document.getElementById('watchDemoBtn')?.addEventListener('click', () => alert('🔥 Demo: See Cognix in action! Full walkthrough available.'));
 </script>
 </body>
