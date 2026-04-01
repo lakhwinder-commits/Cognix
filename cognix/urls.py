@@ -20,7 +20,7 @@ from main import views
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('MasterLogin/', admin.site.urls),
     path('',views.home),
     path('about/', views.about),
     path('chat/', views.chat),
