@@ -20,3 +20,10 @@ def login(request):
 def logout_view(request):
     logout(request)
     return render(request, 'logout.html')
+
+def save_google_avatar(backend, user, response, *args, **kwargs):
+    if backend.name == 'google-oauth2':
+        picture = response.get('picture')
+        if picture:
+            user.profile.avatar = picture
+            user.profile.save()
