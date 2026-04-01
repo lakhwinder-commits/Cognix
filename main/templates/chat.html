@@ -841,13 +841,17 @@
 
     function getAIResponse(msg) {
         const q = msg.toLowerCase();
-        if (q.includes('hello') || q.includes('hi')) return "Hello. I'm Cognix AI. How can I assist you today?";
+        if (q.includes('hello') || q.includes('hi')) return "Mai keha ladle , MEOW , ghop ghop , ki haal chaal ";
         if (q.includes('course') || q.includes('syllabus')) return "I can provide detailed syllabus, course structure, and faculty info. Which program are you in?";
         if (q.includes('exam')) return "Exam schedules are on CUIMS. Mid-terms: Oct/Mar, Finals: Dec/May. Need help preparing?";
         if (q.includes('coding') || q.includes('python')) return "Share your code or describe the problem. I'll help debug or explain concepts.";
         if (q.includes('placement')) return "Cognix placement resources: mock interviews, resume review, company-specific prep. Which domain?";
         if (q.includes('recursion')) return "Recursion is a function that calls itself. Example: factorial(n)=n*factorial(n-1). Want a code sample?";
-        return "I'm here to help with academics, coding, campus updates. Could you clarify your question?";
+        if (q.includes('girlfriend') || q.includes('bandi') || q.include('boyfriend') || q.include('banda') ) return "Should I open Camera for you?🙃, By the way you had guts to ask even with this face , Insane man!";
+        if (q.includes('Sex') || q.includes('Jonny')) return "Tadap hi aesi hai , Ruka nahi ja raha , Ye aaj kal ke bache , Chi Yaar!🙃,chi, NEECH GAWAAR SOCK APKI. Bandi/Bande/sex wgera mai kuj nahi rakha , A hole or Dick Shouldn't be your ultimate goal. Remember this beta -“Temporary pleasure is cheap — that’s why everyone can afford it. Real success isn’t.” ";
+        
+        if (q.include('kiss') || q.include('Moan') || q.include('Fuck')) return "Chup krja Bosdike , Screen se nikl ke gaand maar lu ga, aaltu faltu pusha , Bhag ja jaha se , TMKC ";
+        return "Saale Kuj Kam ka puch";
     }
 
     let isSending = false;
