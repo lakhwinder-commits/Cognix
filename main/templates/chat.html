@@ -7,178 +7,84 @@
     <title>Cognix AI | Limitless Intelligence</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ========== BASE STYLES (unchanged) ========== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ========== BASE STYLES ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg-deep: #0a0c12;
-            --surface-glass: rgba(18, 22, 32, 0.6);
-            --surface-hover: rgba(255, 255, 255, 0.05);
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --text-primary: #e5e7eb;
-            --text-secondary: #9ca3af;
-            --accent-pink: #ff006e;
-            --accent-purple: #8338ec;
+            --bg-deep: #0a0c12; --surface-glass: rgba(18, 22, 32, 0.6);
+            --surface-hover: rgba(255, 255, 255, 0.05); --border-subtle: rgba(255, 255, 255, 0.08);
+            --text-primary: #e5e7eb; --text-secondary: #9ca3af;
+            --accent-pink: #ff006e; --accent-purple: #8338ec;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         html, body { height: 100%; overflow-y: auto; overflow-x: hidden; }
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--bg-deep);
-            color: var(--text-primary);
-            line-height: 1.5;
-        }
-        .bg-glow {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg-deep); color: var(--text-primary); line-height: 1.5; }
+        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
             background: radial-gradient(circle at 10% 20%, rgba(255, 0, 110, 0.11) 0%, transparent 50%),
                         radial-gradient(circle at 90% 70%, rgba(131, 56, 236, 0.09) 0%, transparent 55%),
                         radial-gradient(circle at 40% 80%, rgba(58, 134, 255, 0.07) 0%, transparent 60%);
-            filter: blur(90px);
-            pointer-events: none;
-        }
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            filter: blur(90px); pointer-events: none; }
+        .preloader { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at center, #03050a 0%, #000000 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
+            display: flex; justify-content: center; align-items: center; z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease; }
         .preloader.fade-out { opacity: 0; visibility: hidden; }
-        .preloader-logo {
-            width: 280px;
-            max-width: 70vw;
-            animation: logoPop 1s ease-out forwards, subtleGlow 1.6s infinite alternate;
-        }
-        @keyframes logoPop {
-            0% { opacity: 0; transform: scale(0.7); filter: blur(4px); }
-            100% { opacity: 1; transform: scale(1); filter: blur(0); }
-        }
-        @keyframes subtleGlow {
-            0% { filter: drop-shadow(0 0 0px rgba(255, 0, 110, 0.2)); }
-            100% { filter: drop-shadow(0 0 14px rgba(255, 0, 110, 0.4)); }
-        }
+        .preloader-logo { width: 280px; max-width: 70vw;
+            animation: logoPop 1s ease-out forwards, subtleGlow 1.6s infinite alternate; }
+        @keyframes logoPop { 0% { opacity: 0; transform: scale(0.7); filter: blur(4px); } 100% { opacity: 1; transform: scale(1); filter: blur(0); } }
+        @keyframes subtleGlow { 0% { filter: drop-shadow(0 0 0px rgba(255, 0, 110, 0.2)); } 100% { filter: drop-shadow(0 0 14px rgba(255, 0, 110, 0.4)); } }
         .chat-app { display: flex; height: 100vh; width: 100%; }
-        .sidebar {
-            width: 260px;
-            background: rgba(12, 16, 24, 0.5);
-            backdrop-filter: blur(16px);
-            border-right: 1px solid var(--border-subtle);
-            display: flex;
-            flex-direction: column;
-            padding: 1.5rem 0;
-            height: 100vh;
-        }
+        .sidebar { width: 260px; background: rgba(12, 16, 24, 0.5); backdrop-filter: blur(16px);
+            border-right: 1px solid var(--border-subtle); display: flex; flex-direction: column;
+            padding: 1.5rem 0; height: 100vh; }
         .brand { padding: 0 1.2rem 1.5rem; border-bottom: 1px solid var(--border-subtle); margin-bottom: 1rem; }
         .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
         .brand-logo img { height: 34px; width: auto; }
         .brand-name { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.2px; }
-        .brand-tagline {
-            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.4px;
+        .brand-tagline { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.4px;
             margin-top: 4px; margin-left: 42px;
             background: linear-gradient(135deg, #ff006e, #ffb347);
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-        }
-        .new-chat-btn {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-primary);
-            width: calc(100% - 2rem);
-            margin: 0 1rem 1.5rem;
-            padding: 0.7rem 0;
-            border-radius: 40px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
+            -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .new-chat-btn { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px);
+            border: 1px solid var(--border-subtle); color: var(--text-primary);
+            width: calc(100% - 2rem); margin: 0 1rem 1.5rem; padding: 0.7rem 0;
+            border-radius: 40px; font-weight: 500; display: flex; align-items: center;
+            justify-content: center; gap: 8px; cursor: pointer; transition: var(--transition); }
         .new-chat-btn:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.2); }
         .history-list { flex: 1; overflow-y: auto; padding: 0 0.8rem; display: flex; flex-direction: column; gap: 4px; }
-        .history-item {
-            padding: 0.6rem 1rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-        }
+        .history-item { padding: 0.6rem 1rem; border-radius: 12px; font-size: 0.85rem;
+            color: var(--text-secondary); cursor: pointer; transition: var(--transition);
+            display: flex; align-items: center; gap: 10px; position: relative; }
         .history-item i { width: 20px; font-size: 0.8rem; }
         .history-item:hover { background: var(--surface-hover); color: var(--text-primary); }
         .history-item.active { background: rgba(255, 255, 255, 0.08); color: white; }
-        .delete-chat-btn {
-            margin-left: auto;
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.2s, color 0.2s;
-            font-size: 0.85rem;
-            padding: 4px 6px;
-            border-radius: 8px;
-        }
+        .delete-chat-btn { margin-left: auto; background: transparent; border: none;
+            color: var(--text-secondary); cursor: pointer; opacity: 0;
+            transition: opacity 0.2s, color 0.2s; font-size: 0.85rem; padding: 4px 6px; border-radius: 8px; }
         .history-item:hover .delete-chat-btn { opacity: 1; }
         .delete-chat-btn:hover { color: #ff006e; background: rgba(255, 0, 110, 0.1); }
         .sidebar-footer { margin-top: auto; padding: 1rem 1rem 1.5rem; border-top: 1px solid var(--border-subtle); }
-        .footer-item {
-            display: flex; align-items: center; gap: 12px; padding: 0.6rem 0.8rem;
+        .footer-item { display: flex; align-items: center; gap: 12px; padding: 0.6rem 0.8rem;
             border-radius: 12px; color: var(--text-secondary); font-size: 0.85rem;
-            cursor: pointer; transition: var(--transition); text-decoration: none;
-        }
+            cursor: pointer; transition: var(--transition); text-decoration: none; }
         .footer-item:hover { background: var(--surface-hover); color: var(--text-primary); }
-        .user-profile-block {
-            display: flex; align-items: center; gap: 10px; margin-top: 10px;
-            padding: 0.6rem 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.03);
-        }
-        .profile-image-sidebar, .user-avatar-img {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .logout-btn {
-            width: 100%; margin-top: 8px; padding: 8px; border-radius: 10px; border: none;
-            background: linear-gradient(115deg, #ff006e, #8338ec);
-            color: white; font-weight: 600; cursor: pointer; transition: all 0.25s ease;
-        }
+        .user-profile-block { display: flex; align-items: center; gap: 10px; margin-top: 10px;
+            padding: 0.6rem 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.03); }
+        .profile-image-sidebar, .user-avatar-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        .logout-btn { width: 100%; margin-top: 8px; padding: 8px; border-radius: 10px; border: none;
+            background: linear-gradient(115deg, #ff006e, #8338ec); color: white; font-weight: 600;
+            cursor: pointer; transition: all 0.25s ease; }
         .logout-btn:hover { transform: translateY(-1px); box-shadow: 0 0 8px rgba(255,0,110,0.4); }
         .main-chat { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 2rem; scroll-behavior: smooth; }
-        .empty-state {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; text-align: center; max-width: 600px; margin: 0 auto;
-            animation: fadeUp 0.4s ease;
-        }
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; text-align: center; max-width: 600px; margin: 0 auto; animation: fadeUp 0.4s ease; }
         .empty-logo { width: 85px; margin-bottom: 1.5rem; opacity: 0.9; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2)); }
         .empty-state h2 { font-size: 1.8rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.5rem; color: var(--text-primary); }
         .empty-state p { color: var(--text-secondary); margin-bottom: 2rem; }
         .suggestion-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem; max-width: 800px; margin: 0 auto; }
-        .chip {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle);
+        .chip { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle);
             padding: 0.5rem 1.2rem; border-radius: 40px; font-size: 0.85rem;
-            color: var(--text-secondary); cursor: pointer; transition: var(--transition);
-        }
+            color: var(--text-secondary); cursor: pointer; transition: var(--transition); }
         .chip:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: var(--text-primary); transform: translateY(-1px); }
         .message-list { display: flex; flex-direction: column; gap: 1.2rem; max-width: 1000px; margin: 0 auto; width: 100%; }
         .message-wrapper { display: flex; align-items: flex-start; gap: 12px; max-width: 72%; animation: fadeSlide 0.25s ease; }
@@ -186,179 +92,107 @@
         .message-wrapper.bot { align-self: flex-start; flex-direction: row; }
         .ai-avatar { flex-shrink: 0; height: 34px; width: auto; margin-right: 4px; margin-top: 2px; display: flex; align-items: center; }
         .ai-avatar img { height: 34px; width: auto; }
-        .user-avatar {
-            width: 32px; height: 32px; border-radius: 50%;
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%;
             background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-            font-weight: 600; font-size: 0.85rem; color: white; margin-left: 6px;
-            overflow: hidden;
-        }
-        .user-avatar-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+            font-weight: 600; font-size: 0.85rem; color: white; margin-left: 6px; overflow: hidden; }
+        .user-avatar-img { width: 100%; height: 100%; object-fit: cover; }
         .bubble-wrapper { display: flex; flex-direction: column; max-width: 100%; }
-        .bubble {
-            padding: 10px 14px; border-radius: 16px; font-size: 0.9rem; line-height: 1.45;
-            word-break: break-word; backdrop-filter: blur(6px); position: relative;
-            transition: transform 0.2s ease;
-        }
+        .bubble { padding: 10px 14px; border-radius: 16px; font-size: 0.9rem; line-height: 1.45;
+            word-break: break-word; backdrop-filter: blur(6px); position: relative; transition: transform 0.2s ease; }
         .bubble:hover { transform: translateY(-1px); }
         .user .bubble { background: linear-gradient(115deg, rgba(255, 0, 110, 0.65), rgba(131, 56, 236, 0.65)); color: white; border-bottom-right-radius: 4px; }
         .bot .bubble { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-bottom-left-radius: 4px; }
         .timestamp { font-size: 0.65rem; color: var(--text-secondary); margin-top: 4px; margin-left: 4px; margin-right: 4px; text-align: right; }
-        .user .timestamp { text-align: right; }
-        .bot .timestamp { text-align: left; }
-        .copy-btn {
-            position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.5);
+        .user .timestamp { text-align: right; } .bot .timestamp { text-align: left; }
+        .copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px); border: none; color: var(--text-secondary);
             font-size: 0.75rem; padding: 4px 6px; border-radius: 8px; cursor: pointer;
-            opacity: 0; transition: opacity 0.2s; z-index: 1;
-        }
-        .bot .bubble:hover .copy-btn { opacity: 1; }
-        .copy-btn:hover { color: white; background: rgba(0, 0, 0, 0.7); }
+            opacity: 0; transition: opacity 0.2s; z-index: 1; }
+        .bot .bubble:hover .copy-btn { opacity: 1; } .copy-btn:hover { color: white; background: rgba(0, 0, 0, 0.7); }
         .typing-wrapper { display: flex; align-items: flex-start; gap: 12px; max-width: 72%; align-self: flex-start; animation: fadeSlide 0.2s ease; }
-        .typing-indicator {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+        .typing-indicator { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px; padding: 10px 14px; display: inline-flex; gap: 6px;
-            border-bottom-left-radius: 4px; backdrop-filter: blur(6px);
-        }
+            border-bottom-left-radius: 4px; backdrop-filter: blur(6px); }
         .typing-indicator span { width: 6px; height: 6px; background: var(--text-secondary); border-radius: 50%; display: inline-block; animation: pulse 1.2s infinite; }
         @keyframes pulse { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 1; } }
         .input-area { padding: 1.2rem 2rem 1rem; border-top: 1px solid var(--border-subtle); }
-        .input-wrapper {
-            max-width: 1000px; margin: 0 auto; background: rgba(12, 16, 24, 0.5);
+        .input-wrapper { max-width: 1000px; margin: 0 auto; background: rgba(12, 16, 24, 0.5);
             backdrop-filter: blur(12px); border: 1px solid var(--border-subtle);
             border-radius: 48px; display: flex; align-items: flex-end; padding: 0.4rem 0.4rem 0.4rem 1.2rem;
-            transition: var(--transition);
-            gap: 8px;
-        }
+            transition: var(--transition); gap: 8px; }
         .input-wrapper:focus-within { border-color: rgba(255, 0, 110, 0.3); box-shadow: 0 0 10px rgba(255, 0, 110, 0.18); }
-        .input-wrapper textarea {
-            flex: 1; background: transparent; border: none; padding: 0.8rem 0.5rem;
+        .input-wrapper textarea { flex: 1; background: transparent; border: none; padding: 0.8rem 0.5rem;
             font-size: 0.9rem; color: var(--text-primary); outline: none; resize: none;
-            font-family: inherit; max-height: 150px;
-        }
+            font-family: inherit; max-height: 150px; }
         .input-wrapper textarea::placeholder { color: var(--text-secondary); }
-        .send-btn, .voice-btn {
-            background: linear-gradient(115deg, var(--accent-pink), var(--accent-purple));
+        .send-btn, .voice-btn { background: linear-gradient(115deg, var(--accent-pink), var(--accent-purple));
             border: none; width: 40px; height: 40px; border-radius: 50%; color: white;
             cursor: pointer; transition: var(--transition); display: flex; align-items: center;
-            justify-content: center; box-shadow: 0 0 4px rgba(255, 0, 110, 0.25); flex-shrink: 0; margin-bottom: 4px;
-        }
-        .send-btn:disabled, .voice-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
+            justify-content: center; box-shadow: 0 0 4px rgba(255, 0, 110, 0.25); flex-shrink: 0; margin-bottom: 4px; }
+        .send-btn:disabled, .voice-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .send-btn:hover:not(:disabled), .voice-btn:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 8px rgba(255, 0, 110, 0.4); }
         .disclaimer { max-width: 1000px; margin: 0.5rem auto 0; text-align: center; font-size: 0.7rem; color: #6b7280; letter-spacing: 0.2px; }
         @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #2c2f36; border-radius: 10px; }
-        .menu-toggle {
-            position: absolute; top: 16px; left: 16px; z-index: 50; display: none;
+        .menu-toggle { position: absolute; top: 16px; left: 16px; z-index: 50; display: none;
             background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); border: 1px solid var(--border-subtle);
             color: var(--text-secondary); font-size: 1.2rem; width: 36px; height: 36px;
-            border-radius: 50%; cursor: pointer; transition: var(--transition);
-        }
+            border-radius: 50%; cursor: pointer; transition: var(--transition); }
         .menu-toggle:hover { background: rgba(255, 0, 110, 0.2); color: white; }
         @media (max-width: 780px) {
             .menu-toggle { display: flex; align-items: center; justify-content: center; }
             .sidebar { position: fixed; left: -260px; transition: left 0.2s ease; z-index: 100; background: rgba(8, 10, 18, 0.95); top: 0; height: 100vh; }
-            .sidebar.open { left: 0; }
-            .message-wrapper { max-width: 85%; }
+            .sidebar.open { left: 0; } .message-wrapper { max-width: 85%; }
         }
-        .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            z-index: 10000;
-            animation: fadeUp 0.2s ease;
-            pointer-events: none;
-            border-left: 3px solid #ff006e;
-        }
+        .toast-notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); color: white;
+            padding: 8px 16px; border-radius: 40px; font-size: 0.85rem; z-index: 10000;
+            animation: fadeUp 0.2s ease; pointer-events: none; border-left: 3px solid #ff006e; }
 
-        /* ========== PREMIUM VOICE MODE – WAVE ONLY, BOTTOM ANCHORED ========== */
-        .voice-mode {
-            position: absolute;
-            inset: 0;
+        /* ========== VOICE MODE ========== */
+        .voice-mode { position: absolute; inset: 0;
             background: radial-gradient(circle at center, #0a0a1a, #000000);
-            backdrop-filter: blur(20px);
-            display: none;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            padding-bottom: 60px;
-            z-index: 200;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; backdrop-filter: blur(0); }
-            to { opacity: 1; backdrop-filter: blur(20px); }
-        }
-        #waveCanvas {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 35%;
-            pointer-events: none;
-            filter: drop-shadow(0 0 12px rgba(131, 56, 236, 0.6));
-        }
-        #voiceStatus {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            margin-bottom: 20px;
-            background: rgba(0,0,0,0.5);
-            padding: 6px 18px;
-            border-radius: 40px;
-            backdrop-filter: blur(8px);
-        }
-        #exitVoiceBtn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--border-subtle);
-            padding: 10px 28px;
-            border-radius: 40px;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
-            backdrop-filter: blur(8px);
-            margin-bottom: 20px;
-        }
-        #exitVoiceBtn:hover {
-            background: rgba(255, 0, 110, 0.2);
-            border-color: rgba(255, 0, 110, 0.4);
-            transform: translateY(-2px);
-        }
+            backdrop-filter: blur(20px); display: none; flex-direction: column;
+            justify-content: flex-end; align-items: center; padding-bottom: 60px;
+            z-index: 200; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; backdrop-filter: blur(0); } to { opacity: 1; backdrop-filter: blur(20px); } }
+        #waveCanvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 35%;
+            pointer-events: none; filter: drop-shadow(0 0 12px rgba(131, 56, 236, 0.6)); }
+        #voiceStatus { color: var(--text-secondary); font-size: 1rem; letter-spacing: 0.5px;
+            margin-bottom: 20px; background: rgba(0,0,0,0.5); padding: 6px 18px;
+            border-radius: 40px; backdrop-filter: blur(8px); }
+        #exitVoiceBtn { background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-subtle);
+            padding: 10px 28px; border-radius: 40px; color: var(--text-primary);
+            font-size: 0.9rem; cursor: pointer; transition: var(--transition);
+            backdrop-filter: blur(8px); margin-bottom: 20px; }
+        #exitVoiceBtn:hover { background: rgba(255, 0, 110, 0.2); border-color: rgba(255, 0, 110, 0.4); transform: translateY(-2px); }
+        .wake-hint { position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(131, 56, 236, 0.2); border: 1px solid rgba(131, 56, 236, 0.4);
+            color: var(--text-secondary); padding: 6px 16px; border-radius: 20px;
+            font-size: 0.8rem; backdrop-filter: blur(8px); animation: pulseHint 2s infinite; }
+        @keyframes pulseHint { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+        .mic-help { text-align: center; color: var(--text-secondary); font-size: 0.8rem;
+            margin-top: 10px; max-width: 300px; line-height: 1.4; }
+        .mic-help a { color: var(--accent-pink); text-decoration: none; }
+        
+        /* 🔥 DEBUG: Visual indicator when wave is drawing */
+        .wave-debug { position: absolute; bottom: 10px; right: 10px; font-size: 0.7rem;
+            color: rgba(131, 56, 236, 0.8); background: rgba(0,0,0,0.3); padding: 4px 8px;
+            border-radius: 12px; display: none; }
+        .voice-mode.active .wave-debug { display: block; }
     </style>
 </head>
 <body>
 <div class="bg-glow"></div>
-
-<div class="preloader" id="preloader">
-    <img class="preloader-logo" src="{% static 'assets/logo.png' %}" alt="Cognix">
-</div>
+<div class="preloader" id="preloader"><img class="preloader-logo" src="{% static 'assets/logo.png' %}" alt="Cognix"></div>
 
 <div class="chat-app">
     <aside class="sidebar" id="sidebar">
         <div class="brand">
-            <div class="brand-logo">
-                <img src="{% static 'assets/logo.png' %}" alt="Cognix">
-                <span class="brand-name">Cognix AI</span>
-            </div>
+            <div class="brand-logo"><img src="{% static 'assets/logo.png' %}" alt="Cognix"><span class="brand-name">Cognix AI</span></div>
             <div class="brand-tagline">Limitless Intelligence</div>
         </div>
         <button class="new-chat-btn" id="newChatBtn"><i class="fas fa-plus"></i> New Chat</button>
@@ -369,22 +203,12 @@
             <div class="footer-item" id="profileBtn"><i class="fas fa-user-circle"></i> Profile</div>
             {% if user.is_authenticated %}
             <div class="footer-item user-profile-block">
-                {% if user.profile.avatar %}
-                <img src="{{ user.profile.avatar }}" class="profile-image-sidebar" alt="{{ user.first_name }}">
-                {% else %}
-                <img src="https://ui-avatars.com/api/?name={{ user.first_name|urlencode }}&background=ff006e&color=fff&bold=true&size=42" class="profile-image-sidebar" alt="{{ user.first_name }}">
-                {% endif %}
+                {% if user.profile.avatar %}<img src="{{ user.profile.avatar }}" class="profile-image-sidebar" alt="{{ user.first_name }}">
+                {% else %}<img src="https://ui-avatars.com/api/?name={{ user.first_name|urlencode }}&background=ff006e&color=fff&bold=true&size=42" class="profile-image-sidebar" alt="{{ user.first_name }}">{% endif %}
                 <span>{{ user.first_name }}</span>
             </div>
-            <form action="/logout/" method="POST" style="display:block; margin-top:8px;">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">Logout</button>
-            </form>
-            {% else %}
-            <a href="/login/" class="footer-item" style="display:flex; align-items:center; gap:12px; text-decoration:none;">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </a>
-            {% endif %}
+            <form action="/logout/" method="POST" style="display:block; margin-top:8px;">{% csrf_token %}<button type="submit" class="logout-btn">Logout</button></form>
+            {% else %}<a href="/login/" class="footer-item" style="display:flex; align-items:center; gap:12px; text-decoration:none;"><i class="fas fa-sign-in-alt"></i> Login</a>{% endif %}
         </div>
     </aside>
 
@@ -401,720 +225,293 @@
         <div class="input-area">
             <div class="input-wrapper">
                 <textarea id="messageInput" rows="1" placeholder="Ask Cognix AI..."></textarea>
-                <button class="voice-btn" id="voiceBtn"><i class="fas fa-microphone"></i></button>
+                <button class="voice-btn" id="voiceBtn" title="Voice Mode"><i class="fas fa-microphone"></i></button>
                 <button class="send-btn" id="sendBtn"><i class="fas fa-arrow-up"></i></button>
             </div>
             <div class="disclaimer">Cognix can make mistakes. Check important info.</div>
         </div>
 
-        <!-- Voice Mode – Wave Only, Bottom Anchored -->
+        <!-- Voice Mode -->
         <div id="voiceMode" class="voice-mode">
+            <div class="wake-hint">🗣️ Say "Hey Cognix" or tap mic</div>
             <canvas id="waveCanvas"></canvas>
+            <div class="wave-debug" id="waveDebug">🎨 Wave: <span id="waveStatus">idle</span></div>
             <p id="voiceStatus">🎤 Listening...</p>
             <button id="exitVoiceBtn">Exit Voice Mode</button>
+            <div class="mic-help" id="micHelp" style="display:none;">🔒 Mic blocked? <a href="#" id="micHelpLink">Enable access</a></div>
         </div>
     </main>
 </div>
 
 <script>
-    // ---------- USER DATA from Django ----------
+    // ---------- USER DATA ----------
     const userData = {
         firstName: "{{ user.first_name|default:'Guest'|escapejs }}",
         isAuthenticated: {{ user.is_authenticated|yesno:"true,false" }},
         avatar: "{% if user.profile.avatar %}{{ user.profile.avatar }}{% else %}https://ui-avatars.com/api/?name={{ user.first_name|urlencode }}&background=ff006e&color=fff&bold=true&size=42{% endif %}"
     };
-
-    if (!userData.isAuthenticated) {
-        window.location.href = "/login/";
-    }
+    if (!userData.isAuthenticated) { window.location.href = "/login/"; }
 
     function showToast(message, isError = false) {
-        const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        toast.textContent = message;
-        if (isError) toast.style.borderLeftColor = '#ff006e';
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+        const toast = document.createElement('div'); toast.className = 'toast-notification';
+        toast.textContent = message; if (isError) toast.style.borderLeftColor = '#ff006e';
+        document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000);
     }
+    function getCSRFToken() { const match = document.cookie.match(/csrftoken=([^;]+)/); return match ? match[1] : ''; }
 
-    function getCSRFToken() {
-        const match = document.cookie.match(/csrftoken=([^;]+)/);
-        return match ? match[1] : '';
-    }
+    // ---------- GLOBAL STATE ----------
+    let conversations = {}, currentId = null, isSending = false;
 
-    // ---------- Global state ----------
-    let conversations = {};
-    let currentId = null;
-    let isSending = false;
-
-    // ---------- API Calls ----------
+    // ---------- API ----------
     async function apiRequest(url, options = {}) {
         try {
-            const res = await fetch(url, {
-                ...options,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken(),
-                    ...options.headers,
-                }
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-            return await res.json();
-        } catch (err) {
-            console.error('API Error:', err);
-            showToast(err.message || 'Network error. Please try again.', true);
-            throw err;
-        }
+            const res = await fetch(url, { ...options, headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken(), ...options.headers }});
+            if (!res.ok) throw new Error(`HTTP ${res.status}`); return await res.json();
+        } catch (err) { console.error('API Error:', err); showToast(err.message || 'Network error', true); throw err; }
     }
+    async function loadConversations() { try { const data = await apiRequest('/api/conversations/'); conversations = {}; data.forEach(conv => { conversations[conv.id] = { id: conv.id, title: conv.title, messages: [] }; }); renderSidebar(); } catch (err) { showToast('Failed to load conversations', true); } }
+    async function createNewConversation() { showToast('Creating new chat...'); try { const data = await apiRequest('/api/create-conversation/', { method: 'POST' }); const id = data.id; conversations[id] = { id, title: "New Chat", messages: [] }; currentId = id; renderSidebar(); renderCurrentChat(); showToast('New chat created!'); return id; } catch (err) { const id = Date.now() + '-' + Math.random().toString(36).substr(2, 6); conversations[id] = { id, title: "New Chat", messages: [] }; currentId = id; renderSidebar(); renderCurrentChat(); showToast('New chat (offline)'); return id; } }
+    async function loadMessagesForConversation(convId) { try { const msgs = await apiRequest(`/api/messages/${convId}/`); if (conversations[convId]) conversations[convId].messages = msgs; renderCurrentChat(); } catch (err) { showToast('Failed to load messages', true); } }
+    async function saveMessage(convId, role, content) { try { await apiRequest('/api/save-message/', { method: 'POST', body: JSON.stringify({ conversation_id: convId, role, content }) }); } catch (err) { showToast('Message not saved', true); } }
+    async function updateConversationTitle(convId, newTitle) { try { await apiRequest('/api/update-conversation-title/', { method: 'POST', body: JSON.stringify({ conversation_id: convId, title: newTitle }) }); } catch (err) { console.error('Title update failed', err); } }
+    async function deleteConversation(convId) { try { await apiRequest(`/api/delete-conversation/${convId}/`, { method: 'DELETE' }); delete conversations[convId]; if (currentId === convId) { const ids = Object.keys(conversations); if (ids.length > 0) { currentId = ids[0]; await loadMessagesForConversation(currentId); } else { await createNewConversation(); } } renderSidebar(); renderCurrentChat(); showToast('Chat deleted'); return true; } catch (err) { showToast('Could not delete chat', true); return false; } }
+    async function addMessage(role, content, timestamp = Date.now()) { if (!currentId) await createNewConversation(); const conv = conversations[currentId]; conv.messages.push({ role, content, timestamp }); if (role === 'user' && conv.title === "New Chat") { const newTitle = content.length > 30 ? content.slice(0, 27) + "…" : content; conv.title = newTitle; await updateConversationTitle(currentId, newTitle); renderSidebar(); } await saveMessage(currentId, role, content); renderCurrentChat(); scrollToBottom(); }
+    function getAIResponse(msg) { const q = msg.toLowerCase(); if (q.includes('hello')||q.includes('hi')) return "Warm Greetings, how may I assist you today!"; if (q.includes('poem')) return "The moon ascends the velvet night,\nA silver coin on shadow's height.\nThe stars, like dreams, begin to gleam,\nAnd stir the silent, sleeping stream."; if (q.includes('joke')) return "Why don't scientists trust atoms? Because they make up everything! 😄"; if (q.includes('how are you')) return "I'm functioning optimally, thank you! Ready to help you learn and create."; if (q.includes('recursion')) return "Recursion: See 'Recursion'."; if (q.includes('study plan')) return "Break your day into 90-minute focus blocks. Study, break, repeat. Use active recall and spaced repetition!"; if (q.includes('motivation')) return "The expert in anything was once a beginner. Keep going — every small step adds up! 💪"; if (q.includes('life advice')) return "Be curious, not judgmental. And always save room for dessert 🍰"; if (q.includes('cu exam')) return "CU final exams usually start in December and April. Check the university portal for exact dates."; if (q.includes('debug python')) return "Try using `print()` statements, check indentation, and read the error traceback. Share your code and I'll help!"; if (q.includes('ai notes')) return "AI is about creating systems that can perform tasks requiring human intelligence. Key areas: ML, NLP, robotics, and ethics."; return "I'm still learning, but I can help with coding, study tips, or just a good conversation. What would you like to explore?"; }
+    async function streamAIResponse(userMsg, targetBubbleElement) { const fullResponse = getAIResponse(userMsg); let currentText = ""; const chars = fullResponse.split(''); for (let i = 0; i < chars.length; i++) { currentText += chars[i]; targetBubbleElement.innerText = currentText; if (i % 3 === 0) scrollToBottom(); await new Promise(r => setTimeout(r, 16)); } return fullResponse; }
+    async function sendMessage() { if (isSending) { showToast('Please wait...'); return; } isSending = true; const sendBtn = document.getElementById('sendBtn'); sendBtn.disabled = true; try { const input = document.getElementById('messageInput'); const text = input.value.trim(); if (!text) return; await addMessage('user', text); input.value = ''; input.style.height = 'auto'; const container = document.getElementById('messageList'); const typingWrapper = document.createElement('div'); typingWrapper.className = 'typing-wrapper'; typingWrapper.innerHTML = `<div class="ai-avatar"><img src="{% static 'assets/logo.png' %}" alt="Cognix"></div><div class="typing-indicator"><span></span><span></span><span></span></div>`; container.appendChild(typingWrapper); scrollToBottom(); const wrapper = document.createElement('div'); wrapper.className = `message-wrapper bot`; const aiAvatar = document.createElement('div'); aiAvatar.className = 'ai-avatar'; aiAvatar.innerHTML = `<img src="{% static 'assets/logo.png' %}" alt="Cognix">`; wrapper.appendChild(aiAvatar); const bubbleWrapper = document.createElement('div'); bubbleWrapper.className = 'bubble-wrapper'; const bubble = document.createElement('div'); bubble.className = 'bubble'; bubbleWrapper.appendChild(bubble); wrapper.appendChild(bubbleWrapper); typingWrapper.remove(); container.appendChild(wrapper); scrollToBottom(); const finalContent = await streamAIResponse(text, bubble); const copyBtn = document.createElement('button'); copyBtn.className = 'copy-btn'; copyBtn.innerHTML = '<i class="far fa-copy"></i>'; copyBtn.addEventListener('click', (e) => { e.stopPropagation(); navigator.clipboard.writeText(finalContent); copyBtn.innerHTML = '<i class="fas fa-check"></i>'; setTimeout(() => copyBtn.innerHTML = '<i class="far fa-copy"></i>', 1500); }); bubble.appendChild(copyBtn); const timestamp = Date.now(); const timeSpan = document.createElement('div'); timeSpan.className = 'timestamp'; timeSpan.innerText = new Date(timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }); bubbleWrapper.appendChild(timeSpan); const conv = conversations[currentId]; conv.messages.push({ role: 'assistant', content: finalContent, timestamp }); await saveMessage(currentId, 'assistant', finalContent); renderCurrentChat(); scrollToBottom(); document.getElementById('messageInput').focus(); } catch (err) { console.error('Error:', err); showToast('Failed to send message', true); } finally { isSending = false; sendBtn.disabled = false; } }
+    function renderCurrentChat() { const conv = conversations[currentId]; const container = document.getElementById('messageList'); const empty = document.getElementById('emptyState'); if (!conv || !conv.messages.length) { container.style.display = 'none'; empty.style.display = 'flex'; return; } container.style.display = 'flex'; empty.style.display = 'none'; container.innerHTML = ''; conv.messages.forEach(msg => { const messageType = msg.role === 'assistant' ? 'bot' : 'user'; const wrapper = document.createElement('div'); wrapper.className = `message-wrapper ${messageType}`; if (messageType === 'bot') { const aiAvatar = document.createElement('div'); aiAvatar.className = 'ai-avatar'; aiAvatar.innerHTML = `<img src="{% static 'assets/logo.png' %}" alt="Cognix">`; wrapper.appendChild(aiAvatar); } const bubbleWrapper = document.createElement('div'); bubbleWrapper.className = 'bubble-wrapper'; const bubble = document.createElement('div'); bubble.className = 'bubble'; bubble.innerText = msg.content; if (messageType === 'bot') { const copyBtn = document.createElement('button'); copyBtn.className = 'copy-btn'; copyBtn.innerHTML = '<i class="far fa-copy"></i>'; copyBtn.addEventListener('click', (e) => { e.stopPropagation(); navigator.clipboard.writeText(msg.content); copyBtn.innerHTML = '<i class="fas fa-check"></i>'; setTimeout(() => copyBtn.innerHTML = '<i class="far fa-copy"></i>', 1500); }); bubble.appendChild(copyBtn); } bubbleWrapper.appendChild(bubble); const safeDate = msg.timestamp ? new Date(msg.timestamp) : new Date(); const timeSpan = document.createElement('div'); timeSpan.className = 'timestamp'; timeSpan.innerText = safeDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }); bubbleWrapper.appendChild(timeSpan); wrapper.appendChild(bubbleWrapper); if (messageType === 'user') { const userAvatar = document.createElement('div'); userAvatar.className = 'user-avatar'; if (userData.avatar) { userAvatar.innerHTML = `<img src="${userData.avatar}" class="user-avatar-img" alt="User">`; } else { userAvatar.innerText = userData.firstName?.charAt(0).toUpperCase() || 'U'; } wrapper.appendChild(userAvatar); } container.appendChild(wrapper); }); scrollToBottom(); }
+    function scrollToBottom() { const area = document.getElementById('chatMessages'); area.scrollTop = area.scrollHeight; }
+    function renderSidebar() { const historyDiv = document.getElementById('historyList'); historyDiv.innerHTML = ''; Object.values(conversations).reverse().forEach(conv => { const item = document.createElement('div'); item.className = 'history-item'; if (currentId === conv.id) item.classList.add('active'); item.innerHTML = `<i class="far fa-comment"></i><span>${conv.title}</span>`; const deleteBtn = document.createElement('button'); deleteBtn.className = 'delete-chat-btn'; deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>'; deleteBtn.addEventListener('click', async (e) => { e.stopPropagation(); if (confirm('Delete this chat?')) await deleteConversation(conv.id); }); item.appendChild(deleteBtn); item.onclick = async () => { if (currentId === conv.id) return; currentId = conv.id; await loadMessagesForConversation(currentId); renderSidebar(); if (window.innerWidth <= 780) document.getElementById('sidebar').classList.remove('open'); }; historyDiv.appendChild(item); }); }
+    async function clearAllChats() { if (!confirm('⚠️ Delete ALL chats?')) return; const ids = Object.keys(conversations); for (let id of ids) { try { await apiRequest(`/api/delete-conversation/${id}/`, { method: 'DELETE' }); delete conversations[id]; } catch (err) { console.error('Failed to delete', id); } } conversations = {}; await createNewConversation(); renderSidebar(); renderCurrentChat(); showToast('All chats cleared'); }
+    const suggestionList = ["Write a poem","Tell me a joke","How are you","Explain recursion","Create a study plan","Motivation for today","Life advice","When are CU final exams?","Help me debug Python code","Summarize AI notes","What is the meaning of life?","Best way to learn coding","Tips for public speaking","Explain quantum computing simply","Give me a workout routine"];
+    function populateSuggestionChips() { const container = document.getElementById('suggestionChips'); if (!container) return; container.innerHTML = ''; suggestionList.forEach(s => { const chip = document.createElement('div'); chip.className = 'chip'; chip.setAttribute('data-suggestion', s); chip.textContent = s.length > 28 ? s.slice(0,25)+'…' : s; chip.addEventListener('click', () => { document.getElementById('messageInput').value = s; sendMessage(); }); container.appendChild(chip); }); }
 
-    async function loadConversations() {
-        try {
-            const data = await apiRequest('/api/conversations/');
-            conversations = {};
-            data.forEach(conv => {
-                conversations[conv.id] = {
-                    id: conv.id,
-                    title: conv.title,
-                    messages: []
-                };
-            });
-            renderSidebar();
-        } catch (err) {
-            showToast('Failed to load conversations.', true);
-        }
-    }
+    // ========== 🔥 FIXED VOICE MODE - CANVAS & WAKE WORD ==========
+    let recognition = null, wakeRecognition = null, isVoiceActive = false, isSpeaking = false, currentUtterance = null, animationId = null, audioContext = null, analyser = null, source = null, currentStream = null, wakeInterval = null, silenceTimer = null, micPermissionGranted = false;
+    const canvas = document.getElementById('waveCanvas'); let ctx = null;
+    let targetAmplitude = 22, currentAmplitude = 22, volumeBoost = 0;
 
-    async function createNewConversation() {
-        showToast('Creating new chat...', false);
-        try {
-            const data = await apiRequest('/api/create-conversation/', { method: 'POST' });
-            const id = data.id;
-            conversations[id] = { id, title: "New Chat", messages: [] };
-            currentId = id;
-            renderSidebar();
-            renderCurrentChat();
-            showToast('New chat created!', false);
-            return id;
-        } catch (err) {
-            const id = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
-            conversations[id] = { id, title: "New Chat", messages: [] };
-            currentId = id;
-            renderSidebar();
-            renderCurrentChat();
-            showToast('New chat created (offline mode).', false);
-            return id;
-        }
-    }
-
-    async function loadMessagesForConversation(convId) {
-        try {
-            const msgs = await apiRequest(`/api/messages/${convId}/`);
-            if (conversations[convId]) {
-                conversations[convId].messages = msgs;
-            }
-            renderCurrentChat();
-        } catch (err) {
-            showToast('Failed to load messages.', true);
-        }
-    }
-
-    async function saveMessage(convId, role, content) {
-        try {
-            await apiRequest('/api/save-message/', {
-                method: 'POST',
-                body: JSON.stringify({ conversation_id: convId, role: role, content: content })
-            });
-        } catch (err) {
-            showToast('Message not saved locally.', true);
-        }
-    }
-
-    async function updateConversationTitle(convId, newTitle) {
-        try {
-            await apiRequest('/api/update-conversation-title/', {
-                method: 'POST',
-                body: JSON.stringify({ conversation_id: convId, title: newTitle })
-            });
-        } catch (err) {
-            console.error('Title update failed', err);
-        }
-    }
-
-    async function deleteConversation(convId) {
-        try {
-            await apiRequest(`/api/delete-conversation/${convId}/`, { method: 'DELETE' });
-            delete conversations[convId];
-            if (currentId === convId) {
-                const remainingIds = Object.keys(conversations);
-                if (remainingIds.length > 0) {
-                    currentId = remainingIds[0];
-                    await loadMessagesForConversation(currentId);
-                } else {
-                    await createNewConversation();
-                }
-            }
-            renderSidebar();
-            renderCurrentChat();
-            showToast('Chat deleted successfully.');
-            return true;
-        } catch (err) {
-            showToast('Could not delete chat.', true);
-            return false;
-        }
-    }
-
-    async function addMessage(role, content, timestamp = Date.now()) {
-        if (!currentId) {
-            await createNewConversation();
-        }
-        const conv = conversations[currentId];
-        conv.messages.push({ role, content, timestamp });
-        if (role === 'user' && conv.title === "New Chat") {
-            const newTitle = content.length > 30 ? content.slice(0, 27) + "…" : content;
-            conv.title = newTitle;
-            await updateConversationTitle(currentId, newTitle);
-            renderSidebar();
-        }
-        await saveMessage(currentId, role, content);
-        renderCurrentChat();
-        scrollToBottom();
-    }
-
-    function getAIResponse(msg) {
-        const q = msg.toLowerCase();
-        if (q.includes('hello') || q.includes('hi')) return "Warm Greetings, how may I assist you today!";
-        if (q.includes('poem')) return "The moon ascends the velvet night,\nA silver coin on shadow's height.\nThe stars, like dreams, begin to gleam,\nAnd stir the silent, sleeping stream.";
-        if (q.includes('joke')) return "Why don't scientists trust atoms? Because they make up everything! 😄";
-        if (q.includes('how are you')) return "I'm functioning optimally, thank you! Ready to help you learn and create.";
-        if (q.includes('recursion')) return "Recursion: See 'Recursion'.";
-        if (q.includes('study plan')) return "Break your day into 90-minute focus blocks. Study, break, repeat. Use active recall and spaced repetition!";
-        if (q.includes('motivation')) return "The expert in anything was once a beginner. Keep going — every small step adds up! 💪";
-        if (q.includes('life advice')) return "Be curious, not judgmental. And always save room for dessert 🍰";
-        if (q.includes('cu exam')) return "CU final exams usually start in December and April. Check the university portal for exact dates.";
-        if (q.includes('debug python')) return "Try using `print()` statements, check indentation, and read the error traceback. Share your code and I'll help!";
-        if (q.includes('ai notes')) return "AI is about creating systems that can perform tasks requiring human intelligence. Key areas: ML, NLP, robotics, and ethics.";
-        return "I'm still learning, but I can help with coding, study tips, or just a good conversation. What would you like to explore?";
-    }
-
-    async function streamAIResponse(userMsg, targetBubbleElement) {
-        const fullResponse = getAIResponse(userMsg);
-        let currentText = "";
-        const chars = fullResponse.split('');
-        for (let i = 0; i < chars.length; i++) {
-            currentText += chars[i];
-            targetBubbleElement.innerText = currentText;
-            if (i % 3 === 0) scrollToBottom();
-            await new Promise(r => setTimeout(r, 16));
-        }
-        return fullResponse;
-    }
-
-    async function sendMessage() {
-        if (isSending) {
-            showToast('Please wait, still processing...');
-            return;
-        }
-        isSending = true;
-        const sendBtn = document.getElementById('sendBtn');
-        sendBtn.disabled = true;
-
-        try {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            await addMessage('user', text);
-            input.value = '';
-            input.style.height = 'auto';
-
-            const container = document.getElementById('messageList');
-            const typingWrapper = document.createElement('div');
-            typingWrapper.className = 'typing-wrapper';
-            typingWrapper.innerHTML = `
-                <div class="ai-avatar"><img src="{% static 'assets/logo.png' %}" alt="Cognix"></div>
-                <div class="typing-indicator"><span></span><span></span><span></span></div>
-            `;
-            container.appendChild(typingWrapper);
-            scrollToBottom();
-
-            const wrapper = document.createElement('div');
-            wrapper.className = `message-wrapper bot`;
-            const aiAvatar = document.createElement('div');
-            aiAvatar.className = 'ai-avatar';
-            aiAvatar.innerHTML = `<img src="{% static 'assets/logo.png' %}" alt="Cognix">`;
-            wrapper.appendChild(aiAvatar);
-            const bubbleWrapper = document.createElement('div');
-            bubbleWrapper.className = 'bubble-wrapper';
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            bubbleWrapper.appendChild(bubble);
-            wrapper.appendChild(bubbleWrapper);
-            typingWrapper.remove();
-            container.appendChild(wrapper);
-            scrollToBottom();
-
-            const finalContent = await streamAIResponse(text, bubble);
-
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'copy-btn';
-            copyBtn.innerHTML = '<i class="far fa-copy"></i>';
-            copyBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(finalContent);
-                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
-                setTimeout(() => copyBtn.innerHTML = '<i class="far fa-copy"></i>', 1500);
-            });
-            bubble.appendChild(copyBtn);
-
-            const timestamp = Date.now();
-            const timeSpan = document.createElement('div');
-            timeSpan.className = 'timestamp';
-            timeSpan.innerText = new Date(timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-            bubbleWrapper.appendChild(timeSpan);
-
-            const conv = conversations[currentId];
-            conv.messages.push({ role: 'assistant', content: finalContent, timestamp });
-            await saveMessage(currentId, 'assistant', finalContent);
-            renderCurrentChat();
-            scrollToBottom();
-            document.getElementById('messageInput').focus();
-        } catch (err) {
-            console.error('Error in sendMessage:', err);
-            showToast('Failed to send message. Please try again.', true);
-        } finally {
-            isSending = false;
-            sendBtn.disabled = false;
-        }
-    }
-
-    function renderCurrentChat() {
-        const conv = conversations[currentId];
-        const container = document.getElementById('messageList');
-        const empty = document.getElementById('emptyState');
-        if (!conv || !conv.messages.length) {
-            container.style.display = 'none';
-            empty.style.display = 'flex';
-            return;
-        }
-        container.style.display = 'flex';
-        empty.style.display = 'none';
-        container.innerHTML = '';
-        conv.messages.forEach(msg => {
-            const messageType = msg.role === 'assistant' ? 'bot' : 'user';
-            const wrapper = document.createElement('div');
-            wrapper.className = `message-wrapper ${messageType}`;
-            if (messageType === 'bot') {
-                const aiAvatar = document.createElement('div');
-                aiAvatar.className = 'ai-avatar';
-                aiAvatar.innerHTML = `<img src="{% static 'assets/logo.png' %}" alt="Cognix">`;
-                wrapper.appendChild(aiAvatar);
-            }
-            const bubbleWrapper = document.createElement('div');
-            bubbleWrapper.className = 'bubble-wrapper';
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            bubble.innerText = msg.content;
-            if (messageType === 'bot') {
-                const copyBtn = document.createElement('button');
-                copyBtn.className = 'copy-btn';
-                copyBtn.innerHTML = '<i class="far fa-copy"></i>';
-                copyBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    navigator.clipboard.writeText(msg.content);
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
-                    setTimeout(() => copyBtn.innerHTML = '<i class="far fa-copy"></i>', 1500);
-                });
-                bubble.appendChild(copyBtn);
-            }
-            bubbleWrapper.appendChild(bubble);
-            const safeDate = msg.timestamp ? new Date(msg.timestamp) : new Date();
-            const timeSpan = document.createElement('div');
-            timeSpan.className = 'timestamp';
-            timeSpan.innerText = safeDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
-            bubbleWrapper.appendChild(timeSpan);
-            wrapper.appendChild(bubbleWrapper);
-            if (messageType === 'user') {
-                const userAvatar = document.createElement('div');
-                userAvatar.className = 'user-avatar';
-                if (userData.avatar) {
-                    userAvatar.innerHTML = `<img src="${userData.avatar}" class="user-avatar-img" alt="User">`;
-                } else {
-                    userAvatar.innerText = userData.firstName?.charAt(0).toUpperCase() || 'U';
-                }
-                wrapper.appendChild(userAvatar);
-            }
-            container.appendChild(wrapper);
+    // 🔥 FIX #1: Force canvas sizing AFTER voiceMode is visible
+    async function initCanvas() {
+        if (!canvas) return false;
+        const voiceMode = document.getElementById('voiceMode');
+        // Wait for layout to complete
+        await new Promise(r => {
+            if (voiceMode && voiceMode.offsetParent !== null) {
+                // Force reflow
+                void voiceMode.offsetHeight;
+                setTimeout(r, 50);
+            } else { setTimeout(r, 100); }
         });
-        scrollToBottom();
-    }
-
-    function scrollToBottom() {
-        const area = document.getElementById('chatMessages');
-        area.scrollTop = area.scrollHeight;
-    }
-
-    function renderSidebar() {
-        const historyDiv = document.getElementById('historyList');
-        historyDiv.innerHTML = '';
-        Object.values(conversations).reverse().forEach(conv => {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            if (currentId === conv.id) item.classList.add('active');
-            item.innerHTML = `<i class="far fa-comment"></i><span>${conv.title}</span>`;
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-chat-btn';
-            deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
-            deleteBtn.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                if (confirm('Delete this chat?')) {
-                    await deleteConversation(conv.id);
-                }
-            });
-            item.appendChild(deleteBtn);
-            item.onclick = async () => {
-                if (currentId === conv.id) return;
-                currentId = conv.id;
-                await loadMessagesForConversation(currentId);
-                renderSidebar();
-                if (window.innerWidth <= 780) document.getElementById('sidebar').classList.remove('open');
-            };
-            historyDiv.appendChild(item);
-        });
-    }
-
-    async function clearAllChats() {
-        if (!confirm('⚠️ Delete ALL chats? This action cannot be undone.')) return;
-        const convIds = Object.keys(conversations);
-        for (let id of convIds) {
-            try {
-                await apiRequest(`/api/delete-conversation/${id}/`, { method: 'DELETE' });
-                delete conversations[id];
-            } catch (err) {
-                console.error('Failed to delete', id);
-            }
-        }
-        conversations = {};
-        await createNewConversation();
-        renderSidebar();
-        renderCurrentChat();
-        showToast('All chats cleared.');
-    }
-
-    const suggestionList = [
-        "Write a poem", "Tell me a joke", "How are you", "Explain recursion",
-        "Create a study plan", "Motivation for today", "Life advice",
-        "When are CU final exams?", "Help me debug Python code",
-        "Summarize AI notes", "What is the meaning of life?",
-        "Best way to learn coding", "Tips for public speaking",
-        "Explain quantum computing simply", "Give me a workout routine"
-    ];
-
-    function populateSuggestionChips() {
-        const container = document.getElementById('suggestionChips');
-        if (!container) return;
-        container.innerHTML = '';
-        suggestionList.forEach(suggestion => {
-            const chip = document.createElement('div');
-            chip.className = 'chip';
-            chip.setAttribute('data-suggestion', suggestion);
-            chip.textContent = suggestion.length > 28 ? suggestion.slice(0,25)+'…' : suggestion;
-            chip.addEventListener('click', () => {
-                const input = document.getElementById('messageInput');
-                input.value = suggestion;
-                sendMessage();
-            });
-            container.appendChild(chip);
-        });
-    }
-
-    // ========== PREMIUM VOICE MODE – LIQUID WAVE, NO SELF-HEARING, BOTTOM ANCHORED ==========
-    let recognition = null;
-    let wakeRecognition = null;
-    let isVoiceActive = false;
-    let isSpeaking = false;
-    let currentUtterance = null;
-    let animationId = null;
-    let audioContext = null;
-    let analyser = null;
-    let source = null;
-    let currentStream = null;
-    let wakeInterval = null;
-    let silenceTimer = null;
-
-    const canvas = document.getElementById('waveCanvas');
-    let ctx = null;
-    let targetAmplitude = 22;      // idle
-    let currentAmplitude = 22;
-    let volumeBoost = 0;
-
-    function initCanvas() {
-        if (!canvas) return;
+        // Now size canvas
         canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight * 0.35;
+        canvas.height = Math.floor(window.innerHeight * 0.35);
         ctx = canvas.getContext('2d');
+        console.log('🎨 Canvas initialized:', canvas.width, 'x', canvas.height, 'ctx:', !!ctx);
+        return !!ctx;
     }
 
-    window.addEventListener('resize', () => {
-        if (canvas && isVoiceActive) {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight * 0.35;
-        }
-    });
+    window.addEventListener('resize', () => { if (canvas && isVoiceActive) { canvas.width = window.innerWidth; canvas.height = Math.floor(window.innerHeight * 0.35); } });
 
-    // Premium liquid wave – 3 layers, filled gradient, organic noise
+    // 🔥 FIX #2: Premium wave with visible idle state + debug indicator
     function drawPremiumWave() {
-        if (!isVoiceActive || !ctx || !canvas) return;
+        if (!isVoiceActive) return;
+        // Retry ctx if missing
+        if (!ctx) { console.warn('⚠️ ctx missing, retrying...'); initCanvas().then(ok => { if (ok) requestAnimationFrame(drawPremiumWave); }); return; }
+        if (!canvas || canvas.height === 0) { console.warn('⚠️ Canvas height 0, skipping draw'); setTimeout(drawPremiumWave, 100); return; }
+        
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const time = Date.now() * 0.0028;
-        
-        // Smooth amplitude transitions (lerp for organic feel)
         currentAmplitude += (targetAmplitude - currentAmplitude) * 0.12;
-        let amp = currentAmplitude + volumeBoost;
-        amp = Math.min(amp, 85);
+        let amp = currentAmplitude + volumeBoost; amp = Math.min(amp, 85);
         
-        // 🔥 FIX #5: Idle breathing animation
-        if (targetAmplitude < 20) {
-            targetAmplitude = 18 + Math.sin(time * 2) * 4;
-        }
+        // 🔥 FIX #3: Idle breathing - ALWAYS visible even with mic off
+        if (targetAmplitude < 20) { targetAmplitude = 22 + Math.sin(time * 2) * 6; }
+        // Ensure minimum amplitude for visibility
+        amp = Math.max(amp, 18);
         
-        const colors = [
-            { r: 180, g: 100, b: 255 }, // purple
-            { r: 255, g: 50, b: 150 },  // pink
-            { r: 0,   g: 200, b: 255 }   // cyan
-        ];
+        const colors = [{ r: 180, g: 100, b: 255 }, { r: 255, g: 50, b: 150 }, { r: 0, g: 200, b: 255 }];
         
         for (let layer = 0; layer < 3; layer++) {
             ctx.beginPath();
             const opacity = 0.55 - layer * 0.12;
             ctx.strokeStyle = `rgba(${colors[layer].r}, ${colors[layer].g}, ${colors[layer].b}, ${opacity})`;
-            // 🔥 FIX #1: Sharper lines
-            ctx.lineWidth = 2 + layer * 0.6;
-            ctx.shadowBlur = 12;
+            ctx.lineWidth = 2 + layer * 0.6; ctx.shadowBlur = 12;
             ctx.shadowColor = `rgba(${colors[layer].r}, ${colors[layer].g}, ${colors[layer].b}, 0.7)`;
-            
-            // 🔥 FIX #2: Higher frequency for tighter waves
-            const freq = 0.018 + layer * 0.006;
-            const speed = 1.3 + layer * 0.2;
-            const phaseOffset = layer * Math.PI * 0.7;
-            const yBase = canvas.height - 10; // anchored exactly at bottom edge
-            
-            // 🔥 FIX #4: Horizontal flow motion
+            const freq = 0.018 + layer * 0.006; const speed = 1.3 + layer * 0.2;
+            const phaseOffset = layer * Math.PI * 0.7; const yBase = canvas.height - 10;
             const flow = time * 40;
-            
             let prevX = 0, prevY = yBase;
             for (let x = 0; x <= canvas.width; x += 6) {
-                // 🔥 FIX #4: Add flow to x position for left→right motion
                 let t = (x + flow) * freq + time * speed + phaseOffset;
                 let y = yBase + Math.sin(t) * amp;
-                // Add organic harmonic noise for liquid feel
                 y += Math.sin(x * 0.008 + time * 0.9) * (amp * 0.25);
                 y += Math.sin(x * 0.023 + time * 1.4) * 6;
-                
-                if (x === 0) ctx.moveTo(x, y);
-                else {
-                    const cp1x = prevX + (x - prevX) / 2;
-                    const cp1y = prevY;
-                    const cp2x = prevX + (x - prevX) / 2;
-                    const cp2y = y;
+                if (x === 0) ctx.moveTo(x, y); else {
+                    const cp1x = prevX + (x - prevX) / 2, cp1y = prevY, cp2x = prevX + (x - prevX) / 2, cp2y = y;
                     ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
-                }
-                prevX = x;
-                prevY = y;
+                } prevX = x; prevY = y;
             }
             ctx.stroke();
-            
-            // Filled glow under the wave (energy fill)
-            ctx.lineTo(canvas.width, canvas.height);
-            ctx.lineTo(0, canvas.height);
-            ctx.closePath();
+            ctx.lineTo(canvas.width, canvas.height); ctx.lineTo(0, canvas.height); ctx.closePath();
             const gradient = ctx.createLinearGradient(0, yBase - amp * 1.5, 0, canvas.height);
-            // 🔥 FIX #3: Subtle fill opacity for elegance
             gradient.addColorStop(0, `rgba(${colors[layer].r}, ${colors[layer].g}, ${colors[layer].b}, 0.15)`);
             gradient.addColorStop(1, `rgba(${colors[layer].r}, ${colors[layer].g}, ${colors[layer].b}, 0.01)`);
-            ctx.fillStyle = gradient;
-            ctx.fill();
+            ctx.fillStyle = gradient; ctx.fill();
         }
         ctx.shadowBlur = 0;
+        
+        // 🔥 DEBUG: Update wave status indicator
+        const debug = document.getElementById('waveDebug');
+        const statusEl = document.getElementById('waveStatus');
+        if (debug && statusEl) {
+            const state = isSpeaking ? 'speaking' : (volumeBoost > 5 ? 'listening' : 'idle');
+            statusEl.textContent = `${state} | amp:${Math.round(amp)} | boost:${Math.round(volumeBoost)}`;
+        }
+        
         animationId = requestAnimationFrame(drawPremiumWave);
     }
 
-    // Microphone volume detection for reactivity
+    async function requestMicPermission() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(track => track.stop());
+            micPermissionGranted = true;
+            document.getElementById('micHelp').style.display = 'none';
+            return true;
+        } catch (err) {
+            console.warn('Mic permission denied:', err);
+            micPermissionGranted = false;
+            document.getElementById('micHelp').style.display = 'block';
+            showToast('Microphone access denied. Please enable in browser settings.', true);
+            return false;
+        }
+    }
+
     async function startMicrophoneVolume() {
+        if (!micPermissionGranted) { const granted = await requestMicPermission(); if (!granted) return false; }
         try {
             currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
-            source = audioContext.createMediaStreamSource(currentStream);
-            source.connect(analyser);
-            analyser.fftSize = 128;
+            if (audioContext.state === 'suspended') await audioContext.resume();
+            analyser = audioContext.createAnalyser(); source = audioContext.createMediaStreamSource(currentStream);
+            source.connect(analyser); analyser.fftSize = 128;
             const dataArray = new Uint8Array(analyser.frequencyBinCount);
-            
-            await audioContext.resume();
-            
             function updateVolume() {
                 if (!isVoiceActive || !analyser) return;
                 analyser.getByteFrequencyData(dataArray);
-                let avg = 0;
-                for (let i = 0; i < dataArray.length; i++) avg += dataArray[i];
+                let avg = 0; for (let i = 0; i < dataArray.length; i++) avg += dataArray[i];
                 avg /= dataArray.length;
-                // 🔥 FIX #6: Stronger mic reaction mapping
                 const newBoost = Math.min(40, avg / 6);
-                // 🔥 FIX #7: Smoother transition for responsive feel
                 volumeBoost = volumeBoost * 0.85 + newBoost * 0.15;
                 requestAnimationFrame(updateVolume);
             }
             updateVolume();
-        } catch (err) {
-            console.warn("Mic volume unavailable", err);
-        }
+            return true;
+        } catch (err) { console.warn("Mic volume unavailable", err); document.getElementById('micHelp').style.display = 'block'; return false; }
     }
 
     function setWaveState(state) {
-        if (state === 'idle') targetAmplitude = 18;
+        if (state === 'idle') targetAmplitude = 22;
         else if (state === 'listening') targetAmplitude = 28;
         else if (state === 'speaking') targetAmplitude = 52;
+        document.getElementById('voiceStatus').textContent = state === 'idle' ? '🎤 Idle...' : state === 'listening' ? '🎤 Listening...' : '🔊 Speaking...';
     }
 
-    // Voice synthesis with full self-hearing fix: disable mic tracks during speech
     function speak(text) {
         if (!window.speechSynthesis) return;
-        
-        // Stop recognition to avoid echo
-        if (recognition) {
-            try { recognition.stop(); } catch(e) {}
-        }
-        // CRITICAL: disable microphone tracks while speaking
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => { if (track.enabled) track.enabled = false; });
-        }
-        
-        if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
-        }
-        
+        if (recognition) { try { recognition.stop(); } catch(e) {} }
+        if (currentStream) { currentStream.getTracks().forEach(track => { if (track.enabled) track.enabled = false; }); }
+        if (window.speechSynthesis.speaking) { window.speechSynthesis.cancel(); }
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "en-IN";
-        utterance.rate = 0.95;
-        utterance.pitch = 1.05;
-        
+        utterance.lang = "en-IN"; utterance.rate = 0.95; utterance.pitch = 1.05;
         const voices = window.speechSynthesis.getVoices();
         const preferred = voices.find(v => v.name.includes("Google") || v.name.includes("Female"));
         if (preferred) utterance.voice = preferred;
-        
-        currentUtterance = utterance;
-        isSpeaking = true;
-        setWaveState('speaking');
+        currentUtterance = utterance; isSpeaking = true; setWaveState('speaking');
         document.getElementById('voiceStatus').textContent = `🔊 Speaking: "${text.substring(0, 50)}${text.length > 50 ? '…' : ''}"`;
-        
-        // Dynamic amplitude on word boundaries for lifelike pulse
-        utterance.onboundary = () => {
-            targetAmplitude = 54 + Math.random() * 12;
-        };
-        
+        utterance.onboundary = () => { targetAmplitude = 54 + Math.random() * 12; };
         utterance.onend = () => {
-            isSpeaking = false;
-            currentUtterance = null;
-            setWaveState('listening');
-            document.getElementById('voiceStatus').textContent = '🎤 Listening...';
-            // Re-enable microphone tracks
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => { if (!track.enabled) track.enabled = true; });
-            }
-            // Restart recognition after delay
-            if (isVoiceActive && recognition) {
-                setTimeout(() => {
-                    try { recognition.start(); } catch(e) {}
-                }, 300);
-            }
+            isSpeaking = false; currentUtterance = null; setWaveState('listening');
+            if (currentStream) { currentStream.getTracks().forEach(track => { if (!track.enabled) track.enabled = true; }); }
+            if (isVoiceActive && recognition) { setTimeout(() => { try { recognition.start(); } catch(e) {} }, 300); }
         };
-        utterance.onerror = () => {
-            isSpeaking = false;
-            setWaveState('listening');
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => { if (!track.enabled) track.enabled = true; });
-            }
-        };
+        utterance.onerror = () => { isSpeaking = false; setWaveState('listening'); if (currentStream) { currentStream.getTracks().forEach(track => { if (!track.enabled) track.enabled = true; }); } };
         window.speechSynthesis.speak(utterance);
     }
 
     async function processVoiceInput(text) {
         try {
-            await addMessage('user', text);
-            setWaveState('listening');
+            await addMessage('user', text); setWaveState('listening');
             await new Promise(r => setTimeout(r, 180));
             const response = getAIResponse(text);
             await addMessage('assistant', response);
             await new Promise(r => setTimeout(r, 40));
             requestAnimationFrame(() => speak(response));
             showToast(`Heard: "${text.substring(0, 40)}${text.length > 40 ? '...' : ''}"`);
-        } catch (err) {
-            console.error(err);
-            showToast('Voice processing failed', true);
-            exitVoiceMode();
-        }
+        } catch (err) { console.error(err); showToast('Voice processing failed', true); exitVoiceMode(); }
     }
 
     function initSpeechRecognition(continuousMode = false) {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            showToast('Speech recognition not supported', true);
-            return null;
-        }
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) { showToast('Speech recognition not supported', true); return null; }
         const recog = new SpeechRecognition();
-        recog.lang = "en-IN";
-        recog.interimResults = false;
-        recog.continuous = continuousMode;
-        recog.maxAlternatives = 1;
+        recog.lang = "en-IN"; recog.interimResults = false; recog.continuous = continuousMode; recog.maxAlternatives = 1;
         return recog;
     }
 
     function setupRecognitionHandlers(recog) {
-        recog.onstart = () => {
-            if (isSpeaking) {
-                if (currentUtterance) window.speechSynthesis.cancel();
-                isSpeaking = false;
-            }
-            setWaveState('listening');
-        };
-        recog.onresult = (event) => {
-            if (silenceTimer) clearTimeout(silenceTimer);
-            const transcript = event.results[event.results.length - 1][0].transcript;
-            try { recog.stop(); } catch(e) {}
-            silenceTimer = setTimeout(() => processVoiceInput(transcript), 600);
-        };
-        recog.onerror = (event) => {
-            if (event.error === 'not-allowed') {
-                showToast('Microphone access denied', true);
-                exitVoiceMode();
-            } else if (event.error !== 'no-speech') {
-                console.warn(event.error);
-            }
-        };
-        recog.onend = () => {
-            if (isVoiceActive && !isSpeaking) {
-                setTimeout(() => { try { if (recognition) recognition.start(); } catch(e) {} }, 200);
-            }
-        };
+        recog.onstart = () => { if (isSpeaking) { if (currentUtterance) window.speechSynthesis.cancel(); isSpeaking = false; } setWaveState('listening'); };
+        recog.onresult = (event) => { if (silenceTimer) clearTimeout(silenceTimer); const transcript = event.results[event.results.length - 1][0].transcript; console.log('🎤 Recognized:', transcript); try { recog.stop(); } catch(e) {} silenceTimer = setTimeout(() => processVoiceInput(transcript), 600); };
+        recog.onerror = (event) => { console.warn('Speech error:', event.error); if (event.error === 'not-allowed') { showToast('Microphone access denied', true); document.getElementById('micHelp').style.display = 'block'; exitVoiceMode(); } else if (event.error === 'no-speech') { document.getElementById('voiceStatus').textContent = '🎤 No speech...'; setTimeout(() => { if (isVoiceActive) document.getElementById('voiceStatus').textContent = '🎤 Listening...'; }, 2000); } else { showToast(`Voice error: ${event.error}`, true); } };
+        recog.onend = () => { if (isVoiceActive && !isSpeaking) { setTimeout(() => { try { if (recognition) recognition.start(); } catch(e) { console.warn('Restart failed:', e); } }, 200); } };
     }
 
+    // 🔥 FIX #4: Proper voice mode startup with layout delay
     async function startVoiceMode() {
-        if (wakeInterval) clearInterval(wakeInterval);
+        if (wakeInterval) { clearInterval(wakeInterval); wakeInterval = null; }
         if (wakeRecognition) { try { wakeRecognition.stop(); } catch(e) {} wakeRecognition = null; }
         
+        // Show UI first
         document.querySelector('.chat-messages').style.display = 'none';
         document.querySelector('.input-area').style.display = 'none';
-        document.getElementById('voiceMode').style.display = 'flex';
+        const voiceMode = document.getElementById('voiceMode');
+        voiceMode.style.display = 'flex';
+        voiceMode.classList.add('active'); // for debug indicator
         
-        initCanvas();
-        drawPremiumWave(); // start animation loop
-        await startMicrophoneVolume();
-        setWaveState('listening');
+        // 🔥 KEY FIX: Wait for layout BEFORE canvas init
+        await new Promise(r => setTimeout(r, 100));
         
+        // Initialize canvas with retry
+        let canvasReady = await initCanvas();
+        if (!canvasReady) {
+            console.warn('⚠️ Canvas init failed, retrying once...');
+            await new Promise(r => setTimeout(r, 50));
+            canvasReady = await initCanvas();
+        }
+        if (!canvasReady) { showToast('Canvas failed to initialize', true); return; }
+        
+        // Start animation loop
+        drawPremiumWave();
+        
+        // Request mic permission (user gesture context)
+        const micOk = await startMicrophoneVolume();
+        if (!micOk) {
+            document.getElementById('voiceStatus').textContent = '⚠️ Mic access needed - wave shows idle';
+            // 🔥 Still show idle wave even without mic
+            setWaveState('idle');
+        } else {
+            setWaveState('listening');
+        }
+        
+        // Setup recognition
         recognition = initSpeechRecognition(false);
-        if (!recognition) { exitVoiceMode(); return; }
+        if (!recognition) { document.getElementById('voiceStatus').textContent = '⚠️ Voice not supported'; exitVoiceMode(); return; }
         setupRecognitionHandlers(recognition);
         isVoiceActive = true;
-        try { recognition.start(); } catch(err) { showToast('Could not start voice recognition', true); exitVoiceMode(); }
+        
+        try { recognition.start(); document.getElementById('voiceStatus').textContent = micOk ? '🎤 Listening...' : '🎤 Idle (mic blocked)'; }
+        catch(err) { console.warn('Recognition start error:', err); showToast('Could not start voice', true); exitVoiceMode(); }
     }
     
     function exitVoiceMode() {
@@ -1130,38 +527,44 @@
         
         document.querySelector('.chat-messages').style.display = 'flex';
         document.querySelector('.input-area').style.display = 'block';
-        document.getElementById('voiceMode').style.display = 'none';
+        const voiceMode = document.getElementById('voiceMode');
+        voiceMode.style.display = 'none';
+        voiceMode.classList.remove('active');
         document.getElementById('messageInput').focus();
-        startWakeWordRecognition();
+        setTimeout(() => startWakeWordRecognition(), 1000);
     }
     
-    // Wake word throttled
+    // 🔥 FIX #5: More reliable wake word detection
     function startWakeWordRecognition() {
-        if (!('webkitSpeechRecognition' in window)) return;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return;
         if (wakeInterval) clearInterval(wakeInterval);
-        if (wakeRecognition) { try { wakeRecognition.stop(); } catch(e) {} }
+        if (wakeRecognition) { try { wakeRecognition.stop(); } catch(e) {} wakeRecognition = null; }
+        
         const WAKE_WORD = "hey cognix";
         const startSession = () => {
-            if (!isVoiceActive && !wakeRecognition) {
-                wakeRecognition = initSpeechRecognition(true);
-                if (!wakeRecognition) return;
-                wakeRecognition.onresult = (e) => {
-                    const text = e.results[e.results.length-1][0].transcript.toLowerCase();
-                    if (text.includes(WAKE_WORD)) {
-                        showToast('Wake word detected!');
-                        if (wakeRecognition) { try { wakeRecognition.stop(); } catch(e) {} wakeRecognition = null; }
-                        if (wakeInterval) clearInterval(wakeInterval);
-                        startVoiceMode();
-                    }
-                };
-                wakeRecognition.onerror = () => { wakeRecognition = null; };
-                wakeRecognition.onend = () => { wakeRecognition = null; };
-                try { wakeRecognition.start(); } catch(e) {}
-            }
+            if (isVoiceActive || wakeRecognition) return;
+            wakeRecognition = initSpeechRecognition(false); // non-continuous = more reliable
+            if (!wakeRecognition) return;
+            wakeRecognition.onresult = (e) => {
+                const text = e.results[e.results.length-1][0].transcript.toLowerCase().trim();
+                console.log('🔍 Wake check:', text);
+                if (text.includes(WAKE_WORD) || text.includes('cognix')) {
+                    showToast('✨ Hey Cognix detected!');
+                    if (wakeRecognition) { try { wakeRecognition.stop(); } catch(e) {} wakeRecognition = null; }
+                    if (wakeInterval) clearInterval(wakeInterval);
+                    setTimeout(() => startVoiceMode(), 300);
+                }
+            };
+            wakeRecognition.onerror = (err) => { console.warn('Wake error:', err.error); wakeRecognition = null; };
+            wakeRecognition.onend = () => { wakeRecognition = null; };
+            try { wakeRecognition.start(); } catch(e) { console.warn('Wake start error:', e); }
         };
         startSession();
-        wakeInterval = setInterval(() => { if (!isVoiceActive && !wakeRecognition) startSession(); }, 5000);
+        wakeInterval = setInterval(() => { if (!isVoiceActive && !wakeRecognition) startSession(); }, 8000);
     }
+
+    document.getElementById('micHelpLink')?.addEventListener('click', (e) => { e.preventDefault(); showToast('Allow microphone in browser settings', false); requestMicPermission(); });
 
     window.addEventListener("beforeunload", () => {
         if (animationId) cancelAnimationFrame(animationId);
@@ -1173,61 +576,28 @@
         window.speechSynthesis.cancel();
     });
     
-    document.getElementById('voiceBtn').addEventListener('click', startVoiceMode);
+    document.getElementById('voiceBtn').addEventListener('click', async () => { await requestMicPermission(); startVoiceMode(); });
     document.getElementById('exitVoiceBtn').addEventListener('click', exitVoiceMode);
-    setTimeout(() => startWakeWordRecognition(), 2000);
+    setTimeout(() => startWakeWordRecognition(), 3000);
 
-    // ---------- INITIALIZATION ----------
-    (async function init() {
-        populateSuggestionChips();
-        await loadConversations();
-        await createNewConversation();
-    })();
+    // ---------- INIT ----------
+    (async function init() { populateSuggestionChips(); await loadConversations(); await createNewConversation(); })();
 
-    // ---------- Event Listeners ----------
+    // ---------- EVENTS ----------
     const textarea = document.getElementById('messageInput');
-    textarea.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = Math.min(this.scrollHeight, 150) + 'px';
-    });
-    textarea.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
+    textarea.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'; });
+    textarea.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
     document.getElementById('sendBtn').addEventListener('click', sendMessage);
     document.getElementById('newChatBtn').addEventListener('click', async () => { await createNewConversation(); });
-    
-    const clearAllBtn = document.createElement('div');
-    clearAllBtn.className = 'footer-item';
-    clearAllBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Clear All Chats';
-    clearAllBtn.style.marginTop = '10px';
-    clearAllBtn.addEventListener('click', clearAllChats);
-    document.querySelector('.sidebar-footer').appendChild(clearAllBtn);
-    
+    const clearAllBtn = document.createElement('div'); clearAllBtn.className = 'footer-item'; clearAllBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Clear All Chats'; clearAllBtn.style.marginTop = '10px'; clearAllBtn.addEventListener('click', clearAllChats); document.querySelector('.sidebar-footer').appendChild(clearAllBtn);
     document.getElementById('settingsBtn').addEventListener('click', () => showToast('Settings – coming soon'));
     document.getElementById('upgradeBtn').addEventListener('click', () => showToast('Upgrade to Cognix Pro'));
     document.getElementById('profileBtn').addEventListener('click', () => showToast('User profile'));
-    
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'menu-toggle';
-    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    document.querySelector('.main-chat').prepend(menuToggle);
-    menuToggle.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
-    document.addEventListener('click', e => {
-        if (window.innerWidth <= 780 && document.getElementById('sidebar').classList.contains('open') &&
-            !e.target.closest('.sidebar') && !e.target.closest('.menu-toggle')) {
-            document.getElementById('sidebar').classList.remove('open');
-        }
-    });
-    
+    const menuToggle = document.createElement('button'); menuToggle.className = 'menu-toggle'; menuToggle.innerHTML = '<i class="fas fa-bars"></i>'; document.querySelector('.main-chat').prepend(menuToggle); menuToggle.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+    document.addEventListener('click', e => { if (window.innerWidth <= 780 && document.getElementById('sidebar').classList.contains('open') && !e.target.closest('.sidebar') && !e.target.closest('.menu-toggle')) { document.getElementById('sidebar').classList.remove('open'); } });
     textarea.focus();
     const preloader = document.getElementById('preloader');
-    setTimeout(() => {
-        preloader.classList.add('fade-out');
-        setTimeout(() => preloader.style.display = 'none', 500);
-    }, 1200);
+    setTimeout(() => { preloader.classList.add('fade-out'); setTimeout(() => preloader.style.display = 'none', 500); }, 1200);
 </script>
 </body>
 </html>
