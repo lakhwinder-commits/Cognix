@@ -246,8 +246,11 @@
             <div class="footer-item" id="profileBtn"><i class="fas fa-user-circle"></i> Profile</div>
             {% if user.is_authenticated %}
             <div class="footer-item user-profile-block">
-                {% if user.profile.avatar %}<img src="{{ user.profile.avatar }}" class="profile-image-sidebar" alt="{{ user.first_name }}">
-                {% else %}<img src="https://ui-avatars.com/api/?name={{ user.first_name|urlencode }}&background=ff006e&color=fff&bold=true&size=42" class="profile-image-sidebar" alt="{{ user.first_name }}">{% endif %}
+                {% if user.is_authenticated and user.profile and user.profile.avatar %}
+			<img src="{{ user.profile.avatar }}" class="profile-image-sidebar">
+			{% else %}
+			<img src="https://ui-avatars.com/api/?name={{ user.first_name|urlencode }}" class="profile-image-sidebar">
+			{% endif %}
                 <span>{{ user.first_name }}</span>
             </div>
             <form action="/logout/" method="POST" style="display:block; margin-top:8px;">{% csrf_token %}<button type="submit" class="logout-btn">Logout</button></form>
