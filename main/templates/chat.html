@@ -6,7 +6,7 @@
     <title>Cognix AI | Limitless Intelligence</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ========== BASE STYLES (unchanged core) ========== */
+        /* ========== BASE STYLES (unchanged) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-deep: #0a0c12; --surface-glass: rgba(18, 22, 32, 0.6);
@@ -14,8 +14,6 @@
             --text-primary: #e5e7eb; --text-secondary: #9ca3af;
             --accent-pink: #ff006e; --accent-purple: #8338ec;
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --orb-glow-1: rgba(255, 0, 110, 0.7);
-            --orb-glow-2: rgba(131, 56, 236, 0.6);
         }
         html, body { height: 100%; overflow-y: auto; overflow-x: hidden; }
         body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg-deep); color: var(--text-primary); line-height: 1.5; }
@@ -185,14 +183,8 @@
             height: 130px;
             background: radial-gradient(circle at 35% 35%, #ff3b8c, #7a2be0);
             border-radius: 50%;
-            box-shadow: 0 0 30px rgba(255, 0, 110, 0.5), 0 0 70px rgba(131, 56, 236, 0.4);
             transition: box-shadow 0.05s linear;
-            will-change: transform, box-shadow;
-            animation: orbPulseBase 2s infinite alternate ease-in-out;
-        }
-        @keyframes orbPulseBase {
-            0% { box-shadow: 0 0 25px rgba(255, 0, 110, 0.5), 0 0 50px rgba(131, 56, 236, 0.3); }
-            100% { box-shadow: 0 0 45px rgba(255, 0, 110, 0.8), 0 0 90px rgba(131, 56, 236, 0.6); }
+            will-change: transform, border-radius, box-shadow, filter;
         }
         .voice-status {
             margin-top: 48px;
@@ -282,7 +274,7 @@
             <div class="disclaimer">Cognix can make mistakes. Check important info.</div>
         </div>
 
-        <!-- PREMIUM VOICE MODE: centered glowing orb -->
+        <!-- PREMIUM VOICE MODE: centered glowing orb (liquid & instant) -->
         <div id="voiceMode" class="voice-mode">
             <div class="orb-container">
                 <div class="orb" id="orbElement"></div>
@@ -334,14 +326,94 @@
     const suggestionList = ["Write a poem","Tell me a joke","How are you","Explain recursion","Create a study plan","Motivation for today","Life advice","When are CU final exams?","Help me debug Python code","Summarize AI notes","What is the meaning of life?","Best way to learn coding","Tips for public speaking","Explain quantum computing simply","Give me a workout routine"];
     function populateSuggestionChips() { const container = document.getElementById('suggestionChips'); if (!container) return; container.innerHTML = ''; suggestionList.forEach(s => { const chip = document.createElement('div'); chip.className = 'chip'; chip.setAttribute('data-suggestion', s); chip.textContent = s.length > 28 ? s.slice(0,25)+'…' : s; chip.addEventListener('click', () => { document.getElementById('messageInput').value = s; sendMessage(); }); container.appendChild(chip); }); }
     
-    // ---------- PREMIUM VOICE MODULE: Orb + Low-latency flow ----------
+    // ---------- PREMIUM VOICE MODULE: ZERO LAG + LIQUID ORB ----------
     let voiceActive = false, listening = false, speaking = false, processing = false;
     let recognition = null, mediaStream = null, audioCtx = null, analyser = null, sourceNode = null;
     let animationFrameId = null, currentVolume = 0;
     const orb = document.getElementById('orbElement');
     const voiceStatusSpan = document.getElementById('voiceStatusText');
     const micHelpDiv = document.getElementById('micHelpVoice');
-    
+
+    // 🔥 FAKE INSTANT RESPONSE SOUND (thinking beep)
+    function playThinkingBeep() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.value = 600;
+            gain.gain.value = 0.05;
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.08);
+            ctx.close().catch(e=>console.warn);
+        } catch(e) { console.warn("beep error", e); }
+    }
+
+    // 🔥 SPEAK NOW - zero perceived lag
+    function speakNow(text) {
+        if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+        speaking = true;
+        voiceStatusSpan.innerHTML = "🔊 Speaking...";
+        playThinkingBeep();   // instant feedback
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-IN";
+        utterance.rate = 0.96;
+        utterance.onend = () => {
+            speaking = false;
+            processing = false;
+            muteMicWhileSpeaking(false);
+            if (voiceActive && !speaking && !processing) {
+                listening = true;
+                voiceStatusSpan.innerHTML = "🎤 Listening...";
+                try { if (recognition) recognition.start(); } catch(e) { console.warn(e); }
+            }
+        };
+        utterance.onerror = () => {
+            speaking = false; processing = false; muteMicWhileSpeaking(false);
+            if (voiceActive) { listening = true; voiceStatusSpan.innerHTML = "🎤 Listening..."; try { recognition?.start(); } catch(e) {} }
+        };
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // 🔥 LIQUID ORB + INTELLIGENT GLOW (morphing & reactive)
+    function animateOrb() {
+        if (!voiceActive) return;
+        const time = Date.now() / 300;
+        let scale = 1;
+        let distortion = 0;
+        if (speaking) {
+            scale = 1.35 + Math.sin(time * 10) * 0.05;
+            distortion = 8;
+        } else if (listening) {
+            scale = 1 + currentVolume * 0.5;
+            distortion = currentVolume * 10;
+        } else {
+            scale = 1 + Math.sin(time * 2) * 0.04;
+            distortion = 2;
+        }
+        // liquid border radius
+        const borderRadius = `${50 + Math.sin(time) * distortion}% ${50 + Math.cos(time) * distortion}%`;
+        orb.style.transform = `scale(${scale})`;
+        orb.style.borderRadius = borderRadius;
+        // subtle hue shift
+        const hue = (time * 40) % 360;
+        orb.style.filter = `hue-rotate(${hue}deg)`;
+        // intelligent glow based on state
+        let glow;
+        if (speaking) {
+            glow = `0 0 60px rgba(255,0,110,0.9), 0 0 120px rgba(131,56,236,0.8)`;
+        } else if (listening) {
+            glow = `0 0 ${40 + currentVolume * 60}px rgba(255,0,110,0.7)`;
+        } else {
+            glow = `0 0 30px rgba(131,56,236,0.4)`;
+        }
+        orb.style.boxShadow = glow;
+        animationFrameId = requestAnimationFrame(animateOrb);
+    }
+
     async function requestMicAccess() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -377,58 +449,26 @@
         updateVolumeLoop();
     }
     
-    function animateOrb() {
-        if (!voiceActive) return;
-        let targetScale = 1.0;
-        const time = Date.now() / 380;
-        if (speaking) {
-            targetScale = 1.32 + Math.sin(time * 12) * 0.045;
-        } else if (listening) {
-            let breath = 0.03 * Math.sin(time * 2.2);
-            targetScale = 1.0 + (currentVolume * 0.48) + breath;
-            targetScale = Math.min(targetScale, 1.55);
-        } else {
-            targetScale = 1.0 + Math.sin(time * 1.8) * 0.04;
-        }
-        if (orb) orb.style.transform = `scale(${targetScale})`;
-        let glowIntensity = speaking ? 0.95 : (listening ? 0.65 + currentVolume * 0.4 : 0.5);
-        orb.style.boxShadow = `0 0 ${30 + glowIntensity * 35}px rgba(255, 0, 110, 0.7), 0 0 ${55 + glowIntensity * 45}px rgba(131, 56, 236, 0.6)`;
-        animationFrameId = requestAnimationFrame(animateOrb);
-    }
-    
     function muteMicWhileSpeaking(mute) {
-        if (mediaStream) {
-            mediaStream.getTracks().forEach(track => { if (track.enabled) track.enabled = !mute; });
-        }
+        if (mediaStream) mediaStream.getTracks().forEach(track => { if (track.enabled) track.enabled = !mute; });
     }
     
+    // 🔥 UPDATED: INSTANT VOICE FLOW (no artificial delays)
     async function handleVoiceInput(transcript) {
         if (!voiceActive || speaking || processing) return;
         processing = true;
         listening = false;
         if (recognition) try { recognition.stop(); } catch(e) {}
         muteMicWhileSpeaking(true);
-        voiceStatusSpan.innerHTML = "✨ Processing...";
+        voiceStatusSpan.innerHTML = "🧠 Thinking...";
+        // add user message
         await addMessage('user', transcript);
         const aiReply = getAIResponse(transcript);
+        // SPEAK IMMEDIATELY (zero lag)
+        speakNow(aiReply);
+        // add assistant message (appears while speaking)
         await addMessage('assistant', aiReply);
-        voiceStatusSpan.innerHTML = "🔊 Speaking response...";
-        speaking = true;
-        if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(aiReply);
-        utterance.lang = "en-IN"; utterance.rate = 0.94;
-        utterance.onend = () => {
-            speaking = false;
-            processing = false;
-            muteMicWhileSpeaking(false);
-            if (voiceActive && !speaking) {
-                listening = true;
-                voiceStatusSpan.innerHTML = "🎤 Listening...";
-                try { if (recognition) recognition.start(); } catch(e) { console.warn("restart err", e); }
-            } else if (!voiceActive) { }
-        };
-        utterance.onerror = () => { speaking = false; processing = false; muteMicWhileSpeaking(false); if (voiceActive) { listening = true; voiceStatusSpan.innerHTML = "🎤 Listening..."; try { recognition?.start(); } catch(e) {} } };
-        window.speechSynthesis.speak(utterance);
+        // processing flag will be cleared in speakNow onend
     }
     
     function initRecognition() {
@@ -448,7 +488,7 @@
             }
         };
         recog.onerror = (err) => { if (voiceActive && err.error !== 'aborted') { console.warn("Recog error", err.error); if (err.error === 'not-allowed') micHelpDiv.style.display = 'block'; } };
-        recog.onend = () => { if (voiceActive && !speaking && !processing) { listening = false; setTimeout(() => { if (voiceActive && !speaking && !processing) { try { recog.start(); } catch(e) {} } }, 100); } };
+        recog.onend = () => { if (voiceActive && !speaking && !processing) { listening = false; setTimeout(() => { if (voiceActive && !speaking && !processing) { try { recog.start(); } catch(e) {} } }, 80); } };
         return recog;
     }
     
