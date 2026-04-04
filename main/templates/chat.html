@@ -7,7 +7,7 @@
     <title>Cognix AI | Limitless Intelligence</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Your existing CSS – unchanged, kept for brevity */
+        /* Your existing CSS – only changed #waveCanvas and added .voice-mode relative */
         * {
             margin: 0;
             padding: 0;
@@ -289,19 +289,17 @@
             border-left: 3px solid #ff006e;
         }
 
-        /* ========== VOICE MODE UI - PRODUCTION GRADE ========== */
+        /* ========== SIRI-LEVEL VOICE MODE UI ========== */
         .voice-mode {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 12, 18, 0.95);
+            inset: 0;
+            background: radial-gradient(circle at center, #0a0a1a, #000000);
             backdrop-filter: blur(20px);
-            display: flex;
+            display: none;
             flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            padding: 60px 40px 80px 40px;
             z-index: 200;
             animation: fadeIn 0.3s ease;
         }
@@ -309,53 +307,50 @@
             from { opacity: 0; backdrop-filter: blur(0); }
             to { opacity: 1; backdrop-filter: blur(20px); }
         }
-        .wave-container {
+        .orb-container {
+            flex: 1;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 2rem;
-        }
-        .wave {
-            display: flex;
-            gap: 6px;
             align-items: center;
             justify-content: center;
-            height: 120px;
         }
-        .wave-bar {
-            width: 6px;
-            background: linear-gradient(135deg, #ff006e, #8338ec);
-            border-radius: 4px;
-            transition: height 0.05s ease;
-            min-height: 4px;
-        }
-        .pulse-circle {
-            width: 120px;
-            height: 120px;
+        .ai-orb {
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #ff006e, #8338ec);
-            margin-bottom: 2rem;
-            transition: box-shadow 0.2s ease;
+            background: linear-gradient(135deg, #00f5ff, #8338ec);
+            box-shadow: 0 0 40px rgba(0, 245, 255, 0.6);
+            transition: transform 0.05s ease, box-shadow 0.1s ease, background 0.3s ease, filter 0.2s ease;
         }
-        .voice-mode.speaking .pulse-circle {
-            box-shadow: 0 0 40px rgba(255, 0, 110, 0.8);
-            animation: pulseRing 1s ease-out infinite;
+        .ai-orb.idle {
+            animation: breathe 2s infinite ease-in-out;
         }
-        @keyframes pulseRing {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 0.8; }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .ai-orb.speaking {
+            animation: pulseGlow 0.5s ease-out infinite alternate;
+        }
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 40px rgba(255, 0, 110, 0.6); transform: scale(1); }
+            to { box-shadow: 0 0 100px rgba(255, 0, 110, 1); transform: scale(1.05); }
+        }
+        #waveCanvas {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            pointer-events: none;
         }
         #voiceStatus {
-            font-size: 1.2rem;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 1rem;
             letter-spacing: 0.5px;
+            margin: 16px 0;
         }
         #exitVoiceBtn {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid var(--border-subtle);
             padding: 10px 28px;
             border-radius: 40px;
@@ -364,23 +359,12 @@
             cursor: pointer;
             transition: var(--transition);
             backdrop-filter: blur(8px);
-            margin-top: 1rem;
+            margin-top: 20px;
         }
         #exitVoiceBtn:hover {
             background: rgba(255, 0, 110, 0.2);
             border-color: rgba(255, 0, 110, 0.4);
             transform: translateY(-2px);
-        }
-        .voice-transcript {
-            max-width: 80%;
-            text-align: center;
-            margin-top: 1rem;
-            padding: 12px 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 48px;
-            font-size: 1rem;
-            color: var(--text-secondary);
-            word-break: break-word;
         }
     </style>
 </head>
@@ -446,16 +430,13 @@
             <div class="disclaimer">Cognix can make mistakes. Check important info.</div>
         </div>
 
-        <!-- Voice Mode UI - Production Grade -->
-        <div id="voiceMode" class="voice-mode" style="display: none;">
-            <div class="wave-container">
-                <div class="wave" id="waveBarsContainer">
-                    <!-- 20 bars for real waveform -->
-                </div>
+        <!-- Siri-Level Voice Mode UI -->
+        <div id="voiceMode" class="voice-mode">
+            <div class="orb-container">
+                <div id="aiOrb" class="ai-orb idle"></div>
             </div>
-            <div class="pulse-circle"></div>
+            <canvas id="waveCanvas"></canvas>
             <p id="voiceStatus">🎤 Listening...</p>
-            <div id="voiceTranscript" class="voice-transcript"></div>
             <button id="exitVoiceBtn">Exit Voice Mode</button>
         </div>
     </main>
@@ -872,63 +853,125 @@
         });
     }
 
-    // ========== PRODUCTION-GRADE VOICE MODE ==========
+    // ========== PRODUCTION-GRADE VOICE MODE WITH ALL IMPROVEMENTS ==========
     let recognition = null;
+    let wakeRecognition = null;
     let isVoiceActive = false;
     let isSpeaking = false;
+    let currentUtterance = null;
     let audioContext = null;
     let analyser = null;
     let source = null;
     let animationId = null;
-    let silenceTimer = null;
     let currentStream = null;
+    let silenceTimer = null;
+    let wakeInterval = null;
 
-    // Create 20 waveform bars
-    function createWaveBars() {
-        const container = document.getElementById('waveBarsContainer');
-        container.innerHTML = '';
-        for (let i = 0; i < 20; i++) {
-            const bar = document.createElement('div');
-            bar.className = 'wave-bar';
-            bar.style.height = '4px';
-            container.appendChild(bar);
-        }
+    // Canvas and wave setup
+    const canvas = document.getElementById('waveCanvas');
+    let ctx = null;
+    
+    function initCanvas() {
+        if (!canvas) return;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight * 0.4; // 40% of viewport height
+        ctx = canvas.getContext('2d');
     }
+    
+    window.addEventListener('resize', () => {
+        if (canvas && isVoiceActive) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight * 0.4;
+        }
+    });
 
-    // Real waveform from microphone input
-    async function startRealWaveform() {
+    // SIRI-STYLE MULTI-LAYER SMOOTH WAVEFORM
+    async function startVisualizer() {
         try {
             currentStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
             analyser = audioContext.createAnalyser();
             source = audioContext.createMediaStreamSource(currentStream);
             source.connect(analyser);
-            analyser.fftSize = 64;
+            analyser.fftSize = 256;
             const bufferLength = analyser.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
             
-            const bars = document.querySelectorAll('.wave-bar');
+            await audioContext.resume();
             
-            function animateWaveform() {
-                if (!isVoiceActive) return;
-                analyser.getByteFrequencyData(dataArray);
-                for (let i = 0; i < bars.length && i < dataArray.length; i++) {
-                    const value = dataArray[i] / 255;
-                    const height = Math.max(4, Math.min(100, 20 + value * 80));
-                    bars[i].style.height = `${height}px`;
+            function drawSmoothWave() {
+                if (!isVoiceActive || !analyser) {
+                    if (animationId) cancelAnimationFrame(animationId);
+                    return;
                 }
-                animationId = requestAnimationFrame(animateWaveform);
+                analyser.getByteTimeDomainData(dataArray);
+                
+                if (ctx && canvas) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Multi-layer effect (3 layers)
+                    for (let layer = 0; layer < 3; layer++) {
+                        ctx.beginPath();
+                        const opacity = 1 - layer * 0.3;
+                        ctx.strokeStyle = `rgba(255, 0, 110, ${opacity})`;
+                        ctx.lineWidth = 3 - layer;
+                        
+                        let prevY = canvas.height / 2;
+                        let sliceWidth = canvas.width / dataArray.length;
+                        let x = 0;
+                        let volume = 0;
+                        
+                        for (let i = 0; i < dataArray.length; i++) {
+                            let v = (dataArray[i] - 128) / 128.0;
+                            let y = canvas.height / 2 + v * (80 + layer * 20);
+                            volume += Math.abs(v);
+                            
+                            // Smooth interpolation
+                            let smoothY = prevY + (y - prevY) * 0.2;
+                            
+                            if (i === 0) {
+                                ctx.moveTo(x, smoothY);
+                            } else {
+                                ctx.lineTo(x, smoothY);
+                            }
+                            x += sliceWidth;
+                            prevY = smoothY;
+                        }
+                        ctx.stroke();
+                        
+                        // Update orb based on average volume (from last layer)
+                        if (layer === 2) {
+                            const avgVolume = volume / dataArray.length;
+                            updateOrb(avgVolume * 1.5);
+                            // Idle pulse when silent
+                            const orb = document.getElementById('aiOrb');
+                            if (orb) {
+                                if (avgVolume < 0.01) {
+                                    orb.classList.add('idle');
+                                } else {
+                                    orb.classList.remove('idle');
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                animationId = requestAnimationFrame(drawSmoothWave);
             }
             
-            await audioContext.resume();
-            animateWaveform();
+            drawSmoothWave();
         } catch (err) {
             console.error('Microphone access error:', err);
-            showToast('Could not access microphone', true);
+            if (err.name === "NotAllowedError") {
+                showToast("Please allow microphone access in browser settings", true);
+            } else {
+                showToast('Could not access microphone', true);
+            }
+            exitVoiceMode();
         }
     }
 
-    function stopRealWaveform() {
+    function stopVisualizer() {
         if (animationId) {
             cancelAnimationFrame(animationId);
             animationId = null;
@@ -943,143 +986,135 @@
         }
         analyser = null;
         source = null;
-        // Reset bars
-        const bars = document.querySelectorAll('.wave-bar');
-        bars.forEach(bar => bar.style.height = '4px');
+        if (ctx && canvas) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
 
+    function updateOrb(volume) {
+        const orb = document.getElementById('aiOrb');
+        if (!orb) return;
+        const scale = 1 + Math.min(volume / 20, 0.3);
+        orb.style.transform = `scale(${scale})`;
+        orb.style.boxShadow = `0 0 ${40 + volume * 10}px rgba(255, 0, 110, 0.8)`;
+        orb.style.filter = `hue-rotate(${volume * 5}deg)`;
+    }
+
+    function setVoiceState(state) {
+        const orb = document.getElementById('aiOrb');
+        const statusEl = document.getElementById('voiceStatus');
+        if (!orb || !statusEl) return;
+        
+        if (state === 'listening') {
+            orb.style.background = "linear-gradient(135deg, #00f5ff, #8338ec)";
+            orb.classList.add('idle');
+            orb.classList.remove('speaking');
+            statusEl.textContent = '🎤 Listening...';
+        } else if (state === 'thinking') {
+            orb.style.background = "linear-gradient(135deg, #ffaa00, #ff006e)";
+            orb.classList.remove('idle', 'speaking');
+            statusEl.textContent = '🧠 Thinking...';
+        } else if (state === 'speaking') {
+            orb.style.background = "linear-gradient(135deg, #ff006e, #ff4d6d)";
+            orb.classList.add('speaking');
+            orb.classList.remove('idle');
+            // status will be updated with live subtitle later
+        }
+    }
+
+    // Get a natural voice (Google / Female preferred)
+    function getPreferredVoice() {
+        const voices = window.speechSynthesis.getVoices();
+        let preferred = voices.find(v => v.name.includes("Google UK") && v.lang === 'en-GB');
+        if (!preferred) preferred = voices.find(v => v.name.includes("Google") && v.lang.startsWith('en'));
+        if (!preferred) preferred = voices.find(v => v.lang === 'en-US' && v.name.includes('Female'));
+        if (!preferred) preferred = voices.find(v => v.lang.startsWith('en'));
+        return preferred;
+    }
+
+    // Speak with live subtitle, proper voice, and cancellation of ongoing speech
     function speak(text) {
         if (!window.speechSynthesis) return;
         
-        window.speechSynthesis.cancel(); // Interrupt any ongoing speech
+        // Cancel any ongoing speech to avoid cut-offs
+        if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+        }
+        if (currentUtterance) {
+            window.speechSynthesis.cancel();
+        }
         
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = "en-IN";
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
         
+        // Emotion-based rate/pitch
+        if (text.includes('!')) {
+            utterance.rate = 1.1;
+            utterance.pitch = 1.2;
+        } else if (text.includes('?')) {
+            utterance.rate = 1.0;
+            utterance.pitch = 1.1;
+        } else {
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+        }
+        
+        const preferredVoice = getPreferredVoice();
+        if (preferredVoice) utterance.voice = preferredVoice;
+        
+        currentUtterance = utterance;
         isSpeaking = true;
-        const voiceModeDiv = document.getElementById('voiceMode');
-        voiceModeDiv.classList.add('speaking');
-        document.getElementById('voiceStatus').textContent = '🔊 Speaking...';
+        setVoiceState('speaking');
+        
+        // Live subtitle while speaking
+        const statusEl = document.getElementById('voiceStatus');
+        if (statusEl) statusEl.textContent = `🔊 Speaking: "${text.substring(0, 60)}${text.length > 60 ? '…' : ''}"`;
         
         utterance.onend = () => {
+            currentUtterance = null;
             isSpeaking = false;
-            voiceModeDiv.classList.remove('speaking');
-            if (isVoiceActive) {
-                document.getElementById('voiceStatus').textContent = '🎤 Listening...';
-                // Auto restart recognition after speaking
-                if (recognition) {
-                    try {
-                        recognition.start();
-                    } catch(e) {}
-                }
-            }
-        };
-        
-        utterance.onerror = () => {
-            isSpeaking = false;
-            voiceModeDiv.classList.remove('speaking');
-        };
-        
-        window.speechSynthesis.speak(utterance);
-    }
-
-    function initSpeechRecognition() {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            showToast('Speech recognition not supported in this browser', true);
-            return null;
-        }
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recog = new SpeechRecognition();
-        recog.lang = "en-IN";
-        recog.interimResults = false;
-        recog.continuous = true; // Enable continuous for better UX
-        recog.maxAlternatives = 1;
-        return recog;
-    }
-
-    function setupRecognitionHandlers(recog) {
-        recog.onstart = () => {
-            console.log('Recognition started');
-            // Interrupt AI if speaking
-            if (isSpeaking) {
-                window.speechSynthesis.cancel();
-                isSpeaking = false;
-                document.getElementById('voiceMode').classList.remove('speaking');
-            }
-            document.getElementById('voiceStatus').textContent = '🎤 Listening... Speak now';
-        };
-        
-        recog.onresult = (event) => {
-            // Clear silence timer on activity
-            if (silenceTimer) clearTimeout(silenceTimer);
-            
-            const transcript = event.results[event.results.length - 1][0].transcript;
-            console.log('Recognized:', transcript);
-            
-            const transcriptDiv = document.getElementById('voiceTranscript');
-            transcriptDiv.textContent = `"${transcript}"`;
-            document.getElementById('voiceStatus').textContent = '🧠 Thinking...';
-            
-            // Process the voice input
-            processVoiceInput(transcript);
-            
-            // Set silence detection: stop if no speech for 2 seconds
-            silenceTimer = setTimeout(() => {
-                if (isVoiceActive && recognition) {
-                    console.log('Silence detected, stopping recognition');
-                    try {
-                        recognition.stop();
-                    } catch(e) {}
-                }
-            }, 2000);
-        };
-        
-        recog.onerror = (event) => {
-            console.error('Recognition error:', event.error);
-            let errorMsg = 'Voice recognition error';
-            if (event.error === 'not-allowed') {
-                errorMsg = 'Microphone permission denied';
-            } else if (event.error === 'no-speech') {
-                errorMsg = 'No speech detected. Try again.';
-                document.getElementById('voiceStatus').textContent = '🎤 No speech. Tap mic to retry.';
-                return;
-            } else if (event.error === 'network') {
-                errorMsg = 'Network error. Check connection.';
-            } else if (event.error === 'aborted') {
-                return;
-            }
-            showToast(errorMsg, true);
-            if (isVoiceActive) {
-                document.getElementById('voiceStatus').textContent = '❌ Error. Tap exit and retry.';
-            }
-        };
-        
-        recog.onend = () => {
-            console.log('Recognition ended');
-            if (isVoiceActive && !isSpeaking) {
-                // Auto-restart for continuous listening
+            setVoiceState('listening');
+            // Restart recognition after speaking ends (if still in voice mode)
+            if (isVoiceActive && recognition) {
                 try {
                     recognition.start();
-                    document.getElementById('voiceStatus').textContent = '🎤 Listening...';
                 } catch(e) {
                     console.log('Could not restart recognition');
                 }
             }
         };
+        
+        utterance.onerror = () => {
+            currentUtterance = null;
+            isSpeaking = false;
+            setVoiceState('listening');
+        };
+        
+        window.speechSynthesis.speak(utterance);
     }
 
+    // Process voice input with controlled flow to avoid double response
     async function processVoiceInput(text) {
         try {
             await addMessage('user', text);
+            
+            setVoiceState('thinking');
+            
+            // Small delay to show thinking state
+            await new Promise(r => setTimeout(r, 200));
             
             const response = getAIResponse(text);
             
             await addMessage('assistant', response);
             
-            // Speak the response
-            speak(response);
+            // CRITICAL FIX: ensure DOM is fully rendered before speaking
+            await new Promise(r => setTimeout(r, 50));
+            requestAnimationFrame(() => {
+                speak(response);
+            });
+            
+            // Show confirmation toast
+            showToast(`Heard: "${text.substring(0, 40)}${text.length > 40 ? '...' : ''}"`);
             
         } catch (err) {
             console.error('Voice processing error:', err);
@@ -1088,10 +1123,93 @@
         }
     }
 
+    function initSpeechRecognition(continuousMode = false) {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            showToast('Speech recognition not supported in this browser', true);
+            return null;
+        }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recog = new SpeechRecognition();
+        recog.lang = "en-IN";
+        recog.interimResults = false;
+        recog.continuous = continuousMode;
+        recog.maxAlternatives = 1;
+        return recog;
+    }
+
+    function setupRecognitionHandlers(recog) {
+        recog.onstart = () => {
+            console.log('Recognition started');
+            // Full duplex: interrupt AI if speaking
+            if (isSpeaking) {
+                if (currentUtterance) {
+                    window.speechSynthesis.cancel();
+                    currentUtterance = null;
+                }
+                isSpeaking = false;
+                setVoiceState('listening');
+            }
+        };
+        
+        recog.onresult = (event) => {
+            // Clear silence timer
+            if (silenceTimer) clearTimeout(silenceTimer);
+            
+            const transcript = event.results[event.results.length - 1][0].transcript;
+            console.log('Recognized:', transcript);
+            
+            // Stop recognition while processing
+            try {
+                recog.stop();
+            } catch(e) {}
+            
+            // Process with natural silence delay (800ms)
+            silenceTimer = setTimeout(() => {
+                processVoiceInput(transcript);
+            }, 800);
+        };
+        
+        recog.onerror = (event) => {
+            console.error('Recognition error:', event.error);
+            if (event.error === 'not-allowed') {
+                showToast('Microphone permission denied', true);
+                exitVoiceMode();
+            } else if (event.error === 'network') {
+                showToast('Network error. Check connection.', true);
+            } else if (event.error === 'no-speech') {
+                // Keep listening
+                if (isVoiceActive && recognition) {
+                    try {
+                        recognition.start();
+                    } catch(e) {}
+                }
+            }
+        };
+        
+        recog.onend = () => {
+            console.log('Recognition ended');
+            if (isVoiceActive && !isSpeaking) {
+                // Throttled restart to avoid Chrome crashes
+                setTimeout(() => {
+                    try { 
+                        if (recognition) recognition.start(); 
+                    } catch(e) {}
+                }, 300);
+            }
+        };
+    }
+
     async function startVoiceMode() {
         if (!window.speechSynthesis && !window.webkitSpeechRecognition) {
             showToast('Voice mode not supported in this browser', true);
             return;
+        }
+        
+        // Stop wake word recognition while in voice mode (and clear interval)
+        if (wakeInterval) clearInterval(wakeInterval);
+        if (wakeRecognition) {
+            try { wakeRecognition.stop(); } catch(e) {}
+            wakeRecognition = null;
         }
         
         // Hide chat UI, show voice UI
@@ -1099,19 +1217,15 @@
         document.querySelector('.input-area').style.display = 'none';
         const voiceModeDiv = document.getElementById('voiceMode');
         voiceModeDiv.style.display = 'flex';
-        voiceModeDiv.classList.remove('speaking');
         
-        document.getElementById('voiceStatus').textContent = '🎤 Listening...';
-        document.getElementById('voiceTranscript').textContent = '';
-        
-        // Create wave bars
-        createWaveBars();
+        initCanvas();
+        setVoiceState('listening');
         
         // Start real waveform
-        await startRealWaveform();
+        await startVisualizer();
         
-        // Initialize and start recognition
-        recognition = initSpeechRecognition();
+        // Initialize and start recognition (continuous = false)
+        recognition = initSpeechRecognition(false);
         if (!recognition) {
             exitVoiceMode();
             return;
@@ -1141,19 +1255,103 @@
             recognition = null;
         }
         
-        if (window.speechSynthesis) {
+        if (currentUtterance) {
             window.speechSynthesis.cancel();
+            currentUtterance = null;
         }
         isSpeaking = false;
         
-        stopRealWaveform();
+        stopVisualizer();
         
         // Show chat UI, hide voice UI
         document.querySelector('.chat-messages').style.display = 'flex';
         document.querySelector('.input-area').style.display = 'block';
         document.getElementById('voiceMode').style.display = 'none';
         document.getElementById('messageInput').focus();
+        
+        // Restart wake word recognition with throttling
+        startWakeWordRecognition();
     }
+    
+    // ========== WAKE WORD SYSTEM (THROTTLED FOR BATTERY) ==========
+    function startWakeWordRecognition() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            console.log('Wake word not supported');
+            return;
+        }
+        if (wakeInterval) clearInterval(wakeInterval);
+        if (wakeRecognition) {
+            try { wakeRecognition.stop(); } catch(e) {}
+        }
+        
+        const WAKE_WORD = "hey cognix";
+        
+        // Function to start a single wake-word recognition session
+        const startWakeSession = () => {
+            if (!isVoiceActive && !wakeRecognition) {
+                wakeRecognition = initSpeechRecognition(true);
+                if (!wakeRecognition) return;
+                
+                wakeRecognition.onresult = (event) => {
+                    const text = event.results[event.results.length - 1][0].transcript.toLowerCase();
+                    console.log('Wake word detected:', text);
+                    if (text.includes(WAKE_WORD)) {
+                        showToast('Wake word detected! Opening voice mode...');
+                        // Stop current wake recognition before switching
+                        if (wakeRecognition) {
+                            try { wakeRecognition.stop(); } catch(e) {}
+                            wakeRecognition = null;
+                        }
+                        if (wakeInterval) clearInterval(wakeInterval);
+                        startVoiceMode();
+                    }
+                };
+                
+                wakeRecognition.onerror = (e) => {
+                    console.log('Wake word error:', e.error);
+                    wakeRecognition = null;
+                };
+                
+                wakeRecognition.onend = () => {
+                    wakeRecognition = null;
+                };
+                
+                try {
+                    wakeRecognition.start();
+                } catch(e) {
+                    console.log('Could not start wake recognition');
+                    wakeRecognition = null;
+                }
+            }
+        };
+        
+        // Start first session immediately
+        startWakeSession();
+        
+        // Throttle: restart every 5 seconds to prevent CPU/mic lock
+        wakeInterval = setInterval(() => {
+            if (!isVoiceActive && !wakeRecognition) {
+                startWakeSession();
+            }
+        }, 5000);
+        
+        console.log('Wake word listening for "hey cognix" (throttled)');
+    }
+    
+    // Cleanup on page unload
+    window.addEventListener("beforeunload", () => {
+        stopVisualizer();
+        if (window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+        if (wakeInterval) clearInterval(wakeInterval);
+        if (wakeRecognition) {
+            try { wakeRecognition.stop(); } catch(e) {}
+        }
+        if (recognition) {
+            try { recognition.stop(); } catch(e) {}
+        }
+    });
     
     document.getElementById('voiceBtn').addEventListener('click', () => {
         startVoiceMode();
@@ -1162,6 +1360,11 @@
     document.getElementById('exitVoiceBtn').addEventListener('click', () => {
         exitVoiceMode();
     });
+
+    // Start wake word recognition after page loads
+    setTimeout(() => {
+        startWakeWordRecognition();
+    }, 2000);
 
     // ---------- INITIALIZATION ----------
     (async function init() {
