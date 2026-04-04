@@ -121,10 +121,25 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
         }
         .history-item i { width: 20px; font-size: 0.8rem; }
         .history-item:hover { background: var(--surface-hover); color: var(--text-primary); }
         .history-item.active { background: rgba(255, 255, 255, 0.08); color: white; }
+        .delete-chat-btn { /* NEW */
+            margin-left: auto;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s, color 0.2s;
+            font-size: 0.85rem;
+            padding: 4px 6px;
+            border-radius: 8px;
+        }
+        .history-item:hover .delete-chat-btn { opacity: 1; }
+        .delete-chat-btn:hover { color: #ff006e; background: rgba(255, 0, 110, 0.1); }
         .sidebar-footer { margin-top: auto; padding: 1rem 1rem 1.5rem; border-top: 1px solid var(--border-subtle); }
         .footer-item {
             display: flex; align-items: center; gap: 12px; padding: 0.6rem 0.8rem;
@@ -135,6 +150,12 @@
         .user-profile-block {
             display: flex; align-items: center; gap: 10px; margin-top: 10px;
             padding: 0.6rem 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.03);
+        }
+        .profile-image-sidebar, .user-avatar-img { /* NEW */
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
         }
         .logout-btn {
             width: 100%; margin-top: 8px; padding: 8px; border-radius: 10px; border: none;
@@ -152,7 +173,7 @@
         .empty-logo { width: 85px; margin-bottom: 1.5rem; opacity: 0.9; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2)); }
         .empty-state h2 { font-size: 1.8rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 0.5rem; color: var(--text-primary); }
         .empty-state p { color: var(--text-secondary); margin-bottom: 2rem; }
-        .suggestion-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem; }
+        .suggestion-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.8rem; max-width: 800px; margin: 0 auto; }
         .chip {
             background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle);
             padding: 0.5rem 1.2rem; border-radius: 40px; font-size: 0.85rem;
@@ -170,6 +191,12 @@
             background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
             font-weight: 600; font-size: 0.85rem; color: white; margin-left: 6px;
+            overflow: hidden;
+        }
+        .user-avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .bubble-wrapper { display: flex; flex-direction: column; max-width: 100%; }
         .bubble {
@@ -219,7 +246,12 @@
             cursor: pointer; transition: var(--transition); display: flex; align-items: center;
             justify-content: center; box-shadow: 0 0 4px rgba(255, 0, 110, 0.25); flex-shrink: 0; margin-bottom: 4px;
         }
-        .send-btn:hover { transform: scale(1.02); box-shadow: 0 0 8px rgba(255, 0, 110, 0.4); }
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .send-btn:hover:not(:disabled) { transform: scale(1.02); box-shadow: 0 0 8px rgba(255, 0, 110, 0.4); }
         .disclaimer { max-width: 1000px; margin: 0.5rem auto 0; text-align: center; font-size: 0.7rem; color: #6b7280; letter-spacing: 0.2px; }
         @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -238,6 +270,23 @@
             .sidebar { position: fixed; left: -260px; transition: left 0.2s ease; z-index: 100; background: rgba(8, 10, 18, 0.95); top: 0; height: 100vh; }
             .sidebar.open { left: 0; }
             .message-wrapper { max-width: 85%; }
+        }
+        /* Toast styles NEW */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 10000;
+            animation: fadeUp 0.2s ease;
+            pointer-events: none;
+            border-left: 3px solid #ff006e;
         }
     </style>
 </head>
@@ -265,9 +314,12 @@
             <div class="footer-item" id="profileBtn"><i class="fas fa-user-circle"></i> Profile</div>
             {% if user.is_authenticated %}
             <div class="footer-item user-profile-block">
-                <div class="user-avatar" style="background: linear-gradient(135deg, #ff006e, #8338ec); width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:600;">
-                    {{ user.first_name|slice:":1"|upper }}
-                </div>
+                <!-- UPDATED: Use real profile image with fallback -->
+                {% if user.profile.avatar %}
+                <img src="{{ user.profile.avatar }}" class="profile-image-sidebar" alt="{{ user.first_name }}">
+                {% else %}
+                <img src="https://ui-avatars.com/api/?name={{ user.first_name|urlencode }}&background=ff006e&color=fff&bold=true&size=42" class="profile-image-sidebar" alt="{{ user.first_name }}">
+                {% endif %}
                 <span>{{ user.first_name }}</span>
             </div>
             <form action="/logout/" method="POST" style="display:block; margin-top:8px;">
@@ -288,11 +340,8 @@
                 <img class="empty-logo" src="{% static 'assets/logo.png' %}" alt="Cognix">
                 <h2>How can I help you today?</h2>
                 <p>Ask about courses, coding, exams, or campus life.</p>
-                <div class="suggestion-chips">
-                    <div class="chip" data-suggestion="Explain recursion with an example">📘 Explain recursion</div>
-                    <div class="chip" data-suggestion="Help me debug Python code">🐍 Debug Python</div>
-                    <div class="chip" data-suggestion="Summarize AI notes for exam">📝 Summarize notes</div>
-                    <div class="chip" data-suggestion="When are CU final exams?">📅 CU exam schedule</div>
+                <div class="suggestion-chips" id="suggestionChips">
+                    <!-- NEW: 15 suggestion chips will be injected via JS -->
                 </div>
             </div>
             <div id="messageList" class="message-list" style="display: none;"></div>
@@ -312,19 +361,23 @@
     const userData = {
         firstName: "{{ user.first_name|default:'Guest'|escapejs }}",
         isAuthenticated: {{ user.is_authenticated|yesno:"true,false" }},
+        // UPDATED: Use real profile avatar
         avatar: "{% if user.profile.avatar %}{{ user.profile.avatar }}{% else %}https://ui-avatars.com/api/?name={{ user.first_name|urlencode }}&background=ff006e&color=fff&bold=true&size=42{% endif %}"
     };
 
-    // Fallback redirect (better to use @login_required on the view)
+    // IMPROVED AUTH: Fallback redirect only (backend uses @login_required as primary)
     if (!userData.isAuthenticated) {
         window.location.href = "/login/";
     }
 
-    function getUserInitial() {
-        if (userData.isAuthenticated && userData.firstName && userData.firstName !== "Guest") {
-            return userData.firstName.charAt(0).toUpperCase();
-        }
-        return "U";
+    // Helper: show toast message (NEW)
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.textContent = message;
+        if (isError) toast.style.borderLeftColor = '#ff006e';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
 
     // ---------- CSRF Helper ----------
@@ -336,13 +389,31 @@
     // ---------- Global state ----------
     let conversations = {};   // all conversations (for sidebar)
     let currentId = null;     // active conversation ID
+    let isSending = false;     // NEW: lock sending
 
-    // ---------- API Calls (with improved error handling) ----------
+    // ---------- API Calls with improved error handling ----------
+    async function apiRequest(url, options = {}) {
+        try {
+            const res = await fetch(url, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                    ...options.headers,
+                }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            return await res.json();
+        } catch (err) {
+            console.error('API Error:', err);
+            showToast(err.message || 'Network error. Please try again.', true);
+            throw err;
+        }
+    }
+
     async function loadConversations() {
         try {
-            const res = await fetch('/api/conversations/');
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
+            const data = await apiRequest('/api/conversations/');
             conversations = {};
             data.forEach(conv => {
                 conversations[conv.id] = {
@@ -353,79 +424,88 @@
             });
             renderSidebar();
         } catch (err) {
-            console.error('Error loading conversations:', err);
+            showToast('Failed to load conversations.', true);
         }
     }
 
     async function createNewConversation() {
+        showToast('Creating new chat...', false);
         try {
-            const res = await fetch('/api/create-conversation/', {
-                method: 'POST',
-                headers: { 'X-CSRFToken': getCSRFToken() }
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
+            const data = await apiRequest('/api/create-conversation/', { method: 'POST' });
             const id = data.id;
             conversations[id] = { id, title: "New Chat", messages: [] };
             currentId = id;
             renderSidebar();
             renderCurrentChat();
+            showToast('New chat created!', false);
             return id;
         } catch (err) {
-            console.error('Error creating conversation:', err);
             // Fallback local ID
             const id = Date.now() + '-' + Math.random().toString(36).substr(2, 6);
             conversations[id] = { id, title: "New Chat", messages: [] };
             currentId = id;
             renderSidebar();
             renderCurrentChat();
+            showToast('New chat created (offline mode).', false);
             return id;
         }
     }
 
     async function loadMessagesForConversation(convId) {
         try {
-            const res = await fetch(`/api/messages/${convId}/`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const msgs = await res.json();
+            const msgs = await apiRequest(`/api/messages/${convId}/`);
             if (conversations[convId]) {
                 conversations[convId].messages = msgs;
             }
             renderCurrentChat();
         } catch (err) {
-            console.error('Error loading messages:', err);
+            showToast('Failed to load messages.', true);
         }
     }
 
     async function saveMessage(convId, role, content) {
         try {
-            const res = await fetch('/api/save-message/', {
+            await apiRequest('/api/save-message/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
-                },
                 body: JSON.stringify({ conversation_id: convId, role: role, content: content })
             });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
         } catch (err) {
-            console.error('Error saving message:', err);
+            showToast('Message not saved locally.', true);
         }
     }
 
     async function updateConversationTitle(convId, newTitle) {
         try {
-            const res = await fetch('/api/update-conversation-title/', {
+            await apiRequest('/api/update-conversation-title/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
-                },
                 body: JSON.stringify({ conversation_id: convId, title: newTitle })
             });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
         } catch (err) {
-            console.error('Error updating title:', err);
+            console.error('Title update failed', err);
+        }
+    }
+
+    // NEW: Delete conversation API
+    async function deleteConversation(convId) {
+        try {
+            await apiRequest(`/api/delete-conversation/${convId}/`, { method: 'DELETE' });
+            delete conversations[convId];
+            if (currentId === convId) {
+                const remainingIds = Object.keys(conversations);
+                if (remainingIds.length > 0) {
+                    currentId = remainingIds[0];
+                    await loadMessagesForConversation(currentId);
+                } else {
+                    await createNewConversation();
+                }
+            }
+            renderSidebar();
+            renderCurrentChat();
+            showToast('Chat deleted successfully.');
+            return true;
+        } catch (err) {
+            showToast('Could not delete chat.', true);
+            return false;
         }
     }
 
@@ -448,19 +528,21 @@
         scrollToBottom();
     }
 
-    // Fixed: case‑insensitive keyword matching
+    // Enhanced AI response with more variety
     function getAIResponse(msg) {
         const q = msg.toLowerCase();
-        if (q.includes('hello') || q.includes('hi')) return "Mai keha ladle, MEOW, ghop ghop, ki haal chaal";
-        if (q.includes('course') || q.includes('syllabus')) return "I can provide detailed syllabus, course structure, and faculty info. Which program are you in?";
-        if (q.includes('exam')) return "Exam schedules are on CUIMS. Mid-terms: Oct/Mar, Finals: Dec/May. Need help preparing?";
-        if (q.includes('coding') || q.includes('python')) return "Share your code or describe the problem. I'll help debug or explain concepts.";
-        if (q.includes('placement')) return "Cognix placement resources: mock interviews, resume review, company-specific prep. Which domain?";
-        if (q.includes('recursion')) return "Recursion is a function that calls itself. Example: factorial(n)=n*factorial(n-1). Want a code sample?";
-        if (q.includes('girlfriend') || q.includes('bandi') || q.includes('boyfriend') || q.includes('banda')) return "Should I open Camera for you? 🙃, By the way you had guts to ask even with this face, Insane man!";
-        if (q.includes('sex') || q.includes('jonny') || q.includes('dick') || q.includes('dicks') || q.includes('pussy') || q.includes('fudi')) return "Tadap hi aesi hai, Ruka nahi ja raha, Ye aaj kal ke bache, Chi Yaar! 🙃, chi, NEECH GAWAAR SOCK APKI. Bandi/Bande/sex wgera mai kuj nahi rakha, A hole or Dick Shouldn't be your ultimate goal. Remember this beta - Temporary pleasure is cheap — that's why everyone can afford it. Real success isn't.";
-        if (q.includes('kiss') || q.includes('moan') || q.includes('fuck')) return "Chup krja Bosdike, Screen se nikl ke gaand maar lu ga, aaltu faltu pusha, Bhag ja jaha se, TMKC";
-        return "Saale Kuj Kam ka puch";
+        if (q.includes('hello') || q.includes('hi')) return "Warm Greetings, how may I assist you today!";
+        if (q.includes('poem')) return "The moon ascends the velvet night,\nA silver coin on shadow's height.\nThe stars, like dreams, begin to gleam,\nAnd stir the silent, sleeping stream.";
+        if (q.includes('joke')) return "Why don't scientists trust atoms? Because they make up everything! 😄";
+        if (q.includes('how are you')) return "I'm functioning optimally, thank you! Ready to help you learn and create.";
+        if (q.includes('recursion')) return "Recursion: See 'Recursion'.";
+        if (q.includes('study plan')) return "Break your day into 90-minute focus blocks. Study, break, repeat. Use active recall and spaced repetition!";
+        if (q.includes('motivation')) return "The expert in anything was once a beginner. Keep going — every small step adds up! 💪";
+        if (q.includes('life advice')) return "Be curious, not judgmental. And always save room for dessert 🍰";
+        if (q.includes('cu exam')) return "CU final exams usually start in December and April. Check the university portal for exact dates.";
+        if (q.includes('debug python')) return "Try using `print()` statements, check indentation, and read the error traceback. Share your code and I'll help!";
+        if (q.includes('ai notes')) return "AI is about creating systems that can perform tasks requiring human intelligence. Key areas: ML, NLP, robotics, and ethics.";
+        return "I'm still learning, but I can help with coding, study tips, or just a good conversation. What would you like to explore?";
     }
 
     async function streamAIResponse(userMsg, targetBubbleElement) {
@@ -476,11 +558,14 @@
         return fullResponse;
     }
 
-    let isSending = false;
-
     async function sendMessage() {
-        if (isSending) return;
+        if (isSending) {
+            showToast('Please wait, still processing...');
+            return;
+        }
         isSending = true;
+        const sendBtn = document.getElementById('sendBtn');
+        sendBtn.disabled = true;
 
         try {
             const input = document.getElementById('messageInput');
@@ -542,24 +627,23 @@
             timeSpan.innerText = new Date(timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
             bubbleWrapper.appendChild(timeSpan);
 
-            // Save AI message and update UI (renderCurrentChat is already called inside addMessage? No, we need to update the local state and save)
-            // We must add the assistant message to the conversation and save it.
+            // Save AI message and update state
             const conv = conversations[currentId];
             conv.messages.push({ role: 'assistant', content: finalContent, timestamp });
             await saveMessage(currentId, 'assistant', finalContent);
-            // Re-render to ensure consistency (this will also remove the manually created bubble, but that's fine)
-            renderCurrentChat();
+            renderCurrentChat();  // FIXED: avoids duplicate rendering
             scrollToBottom();
-
-            // Fixed: focus the input element correctly
             document.getElementById('messageInput').focus();
         } catch (err) {
             console.error('Error in sendMessage:', err);
+            showToast('Failed to send message. Please try again.', true);
         } finally {
             isSending = false;
+            sendBtn.disabled = false;
         }
     }
 
+    // FIXED: render only from state, no duplication
     function renderCurrentChat() {
         const conv = conversations[currentId];
         const container = document.getElementById('messageList');
@@ -609,7 +693,12 @@
             if (messageType === 'user') {
                 const userAvatar = document.createElement('div');
                 userAvatar.className = 'user-avatar';
-                userAvatar.innerText = getUserInitial();
+                // UPDATED: use profile image instead of initial
+                if (userData.avatar) {
+                    userAvatar.innerHTML = `<img src="${userData.avatar}" class="user-avatar-img" alt="User">`;
+                } else {
+                    userAvatar.innerText = userData.firstName?.charAt(0).toUpperCase() || 'U';
+                }
                 wrapper.appendChild(userAvatar);
             }
             container.appendChild(wrapper);
@@ -630,7 +719,19 @@
             item.className = 'history-item';
             if (currentId === conv.id) item.classList.add('active');
             item.innerHTML = `<i class="far fa-comment"></i><span>${conv.title}</span>`;
+            // NEW: delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-chat-btn';
+            deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+            deleteBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (confirm('Delete this chat?')) {
+                    await deleteConversation(conv.id);
+                }
+            });
+            item.appendChild(deleteBtn);
             item.onclick = async () => {
+                if (currentId === conv.id) return;
                 currentId = conv.id;
                 await loadMessagesForConversation(currentId);
                 renderSidebar();
@@ -640,11 +741,58 @@
         });
     }
 
-    // ---------- INITIALIZATION (CLEAN SOLUTION) ----------
-    // Load existing conversations for sidebar, but create a NEW conversation as the active one.
+    // NEW: Clear all chats (bonus)
+    async function clearAllChats() {
+        if (!confirm('⚠️ Delete ALL chats? This action cannot be undone.')) return;
+        const convIds = Object.keys(conversations);
+        for (let id of convIds) {
+            try {
+                await apiRequest(`/api/delete-conversation/${id}/`, { method: 'DELETE' });
+                delete conversations[id];
+            } catch (err) {
+                console.error('Failed to delete', id);
+            }
+        }
+        conversations = {};
+        await createNewConversation();
+        renderSidebar();
+        renderCurrentChat();
+        showToast('All chats cleared.');
+    }
+
+    // NEW: 15 suggestion chips
+    const suggestionList = [
+        "Write a poem", "Tell me a joke", "How are you", "Explain recursion",
+        "Create a study plan", "Motivation for today", "Life advice",
+        "When are CU final exams?", "Help me debug Python code",
+        "Summarize AI notes", "What is the meaning of life?",
+        "Best way to learn coding", "Tips for public speaking",
+        "Explain quantum computing simply", "Give me a workout routine"
+    ];
+
+    function populateSuggestionChips() {
+        const container = document.getElementById('suggestionChips');
+        if (!container) return;
+        container.innerHTML = '';
+        suggestionList.forEach(suggestion => {
+            const chip = document.createElement('div');
+            chip.className = 'chip';
+            chip.setAttribute('data-suggestion', suggestion);
+            chip.textContent = suggestion.length > 28 ? suggestion.slice(0,25)+'…' : suggestion;
+            chip.addEventListener('click', () => {
+                const input = document.getElementById('messageInput');
+                input.value = suggestion;
+                sendMessage();
+            });
+            container.appendChild(chip);
+        });
+    }
+
+    // ---------- INITIALIZATION ----------
     (async function init() {
-        await loadConversations();          // fill sidebar with history
-        await createNewConversation();      // start fresh, active chat is new
+        populateSuggestionChips();  // NEW
+        await loadConversations();
+        await createNewConversation();
     })();
 
     // ---------- Event Listeners ----------
@@ -664,18 +812,17 @@
     document.getElementById('newChatBtn').addEventListener('click', async () => {
         await createNewConversation();
     });
-    document.querySelectorAll('.chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-            const suggestion = chip.getAttribute('data-suggestion');
-            if (suggestion) {
-                textarea.value = suggestion;
-                sendMessage();
-            }
-        });
-    });
-    document.getElementById('settingsBtn').addEventListener('click', () => alert('Settings – coming soon'));
-    document.getElementById('upgradeBtn').addEventListener('click', () => alert('Upgrade to Cognix Pro'));
-    document.getElementById('profileBtn').addEventListener('click', () => alert('User profile'));
+    // BONUS: Add Clear All Chats button in sidebar footer
+    const clearAllBtn = document.createElement('div');
+    clearAllBtn.className = 'footer-item';
+    clearAllBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Clear All Chats';
+    clearAllBtn.style.marginTop = '10px';
+    clearAllBtn.addEventListener('click', clearAllChats);
+    document.querySelector('.sidebar-footer').appendChild(clearAllBtn);
+
+    document.getElementById('settingsBtn').addEventListener('click', () => showToast('Settings – coming soon'));
+    document.getElementById('upgradeBtn').addEventListener('click', () => showToast('Upgrade to Cognix Pro'));
+    document.getElementById('profileBtn').addEventListener('click', () => showToast('User profile'));
 
     // Mobile menu toggle
     const menuToggle = document.createElement('button');

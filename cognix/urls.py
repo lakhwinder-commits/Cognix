@@ -15,7 +15,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
 from main import views
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView
@@ -32,5 +31,7 @@ urlpatterns = [
     path("api/conversations/", views.get_conversations),
     path("api/messages/<int:conv_id>/", views.get_messages),
     path("api/create-conversation/", views.create_conversation),
-    path("api/save-message/", views.save_message)
+    path("api/save-message/", views.save_message),
+    path('api/delete-conversation/<int:conv_id>/', views.delete_conversation),
+    path("api/update-conversation-title/", views.update_conversation_title),
 ]
