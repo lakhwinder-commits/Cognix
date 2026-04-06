@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -152,41 +151,89 @@
             padding: 8px 16px; border-radius: 40px; font-size: 0.85rem; z-index: 10000;
             animation: fadeUp 0.2s ease; pointer-events: none; border-left: 3px solid #ff006e; }
 
-        /* ========== PREMIUM VOICE MODE: CENTERED GLOWING ORB ========== */
+        /* ========== PREMIUM VOICE MODE: MULTI-LAYER WAVEFORM ========== */
         .voice-mode {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at center, #0a0a1a, #000000);
             backdrop-filter: blur(24px);
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 200;
-            animation: fadeIn 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            animation: floatScene 6s ease-in-out infinite;
+            transition: background 0.1s linear;
+        }
+        @keyframes floatScene {
+            0%,100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
         }
         @keyframes fadeIn {
             from { opacity: 0; backdrop-filter: blur(0); }
             to { opacity: 1; backdrop-filter: blur(24px); }
         }
-        .orb-container {
+        .voice-bars-layers-wrapper {
             position: relative;
-            width: 280px;
-            height: 280px;
+            width: 80%;
+            max-width: 860px;
+            height: 160px;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0 auto;
+        }
+        .voice-bars-layer {
+            position: absolute;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .voice-bars-layer.back {
+            opacity: 0.25;
+            transform: scaleY(0.6);
+            filter: blur(4px);
+        }
+        .voice-bars-layer.mid {
+            opacity: 0.5;
+            transform: scaleY(0.8);
+        }
+        .voice-bars-layer.front {
+            opacity: 1;
+        }
+        .voice-bar {
+            border-radius: 4px;
+            transition: height 0.04s ease-out, box-shadow 0.05s ease, background 0.05s ease;
+            will-change: height;
+            backdrop-filter: blur(6px);
+        }
+        .voice-bar:nth-child(odd) { width: 5px; }
+        .voice-bar:nth-child(even) { width: 7px; }
+        
+        /* Focus center glow */
+        .voice-bars-layers-wrapper::after {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(255,0,110,0.25), transparent);
+            filter: blur(40px);
             pointer-events: none;
-            z-index: 10;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
         }
-        .orb {
-            width: 130px;
-            height: 130px;
-            background: radial-gradient(circle at 35% 35%, #ff3b8c, #7a2be0);
-            border-radius: 50%;
-            transition: box-shadow 0.05s linear;
-            will-change: transform, border-radius, box-shadow, filter;
+        
+        /* Energy burst animation */
+        .voice-speaking .voice-bars-layers-wrapper {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+            transition: all 0.2s cubic-bezier(0.2, 1.2, 0.4, 1);
         }
+        
         .voice-status {
             margin-top: 48px;
             background: rgba(0, 0, 0, 0.55);
@@ -199,6 +246,7 @@
             color: #e2e8f0;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+            z-index: 20;
         }
         #exitVoiceBtn {
             background: rgba(255, 255, 255, 0.05);
@@ -211,11 +259,13 @@
             transition: var(--transition);
             backdrop-filter: blur(8px);
             margin-top: 40px;
+            z-index: 20;
         }
         #exitVoiceBtn:hover {
             background: rgba(255, 0, 110, 0.2);
             border-color: rgba(255, 0, 110, 0.5);
             transform: translateY(-2px);
+            box-shadow: 0 0 12px rgba(255, 0, 110, 0.3);
         }
         .mic-help-voice {
             margin-top: 20px;
@@ -278,12 +328,14 @@
             <div class="disclaimer">Cognix can make mistakes. Check important info.</div>
         </div>
 
-        <!-- PREMIUM VOICE MODE: centered glowing orb (liquid & instant) -->
+        <!-- PREMIUM VOICE MODE: multi-layer depth, motion flow, reactive glow -->
         <div id="voiceMode" class="voice-mode">
-            <div class="orb-container">
-                <div class="orb" id="orbElement"></div>
+            <div class="voice-bars-layers-wrapper">
+                <div class="voice-bars-layer back" id="voiceBarsBack"></div>
+                <div class="voice-bars-layer mid" id="voiceBarsMid"></div>
+                <div class="voice-bars-layer front" id="voiceBarsFront"></div>
             </div>
-            <div class="voice-status" id="voiceStatusText">🎤 Tap & speak</div>
+            <div class="voice-status" id="voiceStatusText">Listening</div>
             <button id="exitVoiceBtn">Exit Voice Mode</button>
             <div class="mic-help-voice" id="micHelpVoice" style="display: none;">🔒 Microphone blocked? <a href="#" id="micHelpLinkVoice">Enable access</a></div>
         </div>
@@ -330,22 +382,47 @@
     const suggestionList = ["Write a poem","Tell me a joke","How are you","Explain recursion","Create a study plan","Motivation for today","Life advice","When are CU final exams?","Help me debug Python code","Summarize AI notes","What is the meaning of life?","Best way to learn coding","Tips for public speaking","Explain quantum computing simply","Give me a workout routine"];
     function populateSuggestionChips() { const container = document.getElementById('suggestionChips'); if (!container) return; container.innerHTML = ''; suggestionList.forEach(s => { const chip = document.createElement('div'); chip.className = 'chip'; chip.setAttribute('data-suggestion', s); chip.textContent = s.length > 28 ? s.slice(0,25)+'…' : s; chip.addEventListener('click', () => { document.getElementById('messageInput').value = s; sendMessage(); }); container.appendChild(chip); }); }
     
-    // ---------- PREMIUM VOICE MODULE: ZERO LAG + LIQUID ORB ----------
+    // ---------- PREMIUM VOICE MODULE: MULTI-LAYER, MOTION FLOW, REACTIVE GLOW ----------
     let voiceActive = false, listening = false, speaking = false, processing = false;
     let recognition = null, mediaStream = null, audioCtx = null, analyser = null, sourceNode = null;
-    let animationFrameId = null, currentVolume = 0;
-    const orb = document.getElementById('orbElement');
+    let barsAnimationFrameId = null, currentVolume = 0;
+    let backBars = [], midBars = [], frontBars = [];
     const voiceStatusSpan = document.getElementById('voiceStatusText');
     const micHelpDiv = document.getElementById('micHelpVoice');
+    const voiceModeDiv = document.getElementById('voiceMode');
 
-    // 🔥 FAKE INSTANT RESPONSE SOUND (thinking beep)
+    function createBars() {
+        const backContainer = document.getElementById('voiceBarsBack');
+        const midContainer = document.getElementById('voiceBarsMid');
+        const frontContainer = document.getElementById('voiceBarsFront');
+        backContainer.innerHTML = ''; midContainer.innerHTML = ''; frontContainer.innerHTML = '';
+        const barCount = 40;
+        backBars = []; midBars = []; frontBars = [];
+        for (let i = 0; i < barCount; i++) {
+            const backBar = document.createElement('div'); backBar.className = 'voice-bar';
+            const midBar = document.createElement('div'); midBar.className = 'voice-bar';
+            const frontBar = document.createElement('div'); frontBar.className = 'voice-bar';
+            // Random opacity for organic feel
+            const randOpacity = 0.65 + Math.random() * 0.35;
+            backBar.style.opacity = randOpacity * 0.6;
+            midBar.style.opacity = randOpacity * 0.8;
+            frontBar.style.opacity = randOpacity;
+            backContainer.appendChild(backBar);
+            midContainer.appendChild(midBar);
+            frontContainer.appendChild(frontBar);
+            backBars.push(backBar);
+            midBars.push(midBar);
+            frontBars.push(frontBar);
+        }
+    }
+
     function playThinkingBeep() {
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = "sine";
-            osc.frequency.value = 600;
+            osc.frequency.value = 500 + Math.random() * 200; // organic variation
             gain.gain.value = 0.05;
             osc.connect(gain);
             gain.connect(ctx.destination);
@@ -355,13 +432,14 @@
         } catch(e) { console.warn("beep error", e); }
     }
 
-    // 🔥 SPEAK NOW - zero perceived lag
     function speakNow(text) {
         if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
         speaking = true;
-        voiceStatusSpan.innerHTML = "🔊 Speaking...";
-        playThinkingBeep();   // instant feedback
-
+        voiceStatusSpan.innerHTML = "Speaking...";
+        // Energy burst
+        document.body.classList.add("voice-speaking");
+        setTimeout(() => { document.body.classList.remove("voice-speaking"); }, 300);
+        playThinkingBeep();
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = "en-IN";
         utterance.rate = 0.96;
@@ -371,51 +449,86 @@
             muteMicWhileSpeaking(false);
             if (voiceActive && !speaking && !processing) {
                 listening = true;
-                voiceStatusSpan.innerHTML = "🎤 Listening...";
+                voiceStatusSpan.innerHTML = "Listening...";
                 try { if (recognition) recognition.start(); } catch(e) { console.warn(e); }
             }
         };
         utterance.onerror = () => {
             speaking = false; processing = false; muteMicWhileSpeaking(false);
-            if (voiceActive) { listening = true; voiceStatusSpan.innerHTML = "🎤 Listening..."; try { recognition?.start(); } catch(e) {} }
+            if (voiceActive) { listening = true; voiceStatusSpan.innerHTML = "Listening..."; try { recognition?.start(); } catch(e) {} }
         };
         window.speechSynthesis.speak(utterance);
     }
 
-    // 🔥 LIQUID ORB + INTELLIGENT GLOW (morphing & reactive)
-    function animateOrb() {
+    function animateBars() {
         if (!voiceActive) return;
-        const time = Date.now() / 300;
-        let scale = 1;
-        let distortion = 0;
-        if (speaking) {
-            scale = 1.35 + Math.sin(time * 10) * 0.05;
-            distortion = 8;
-        } else if (listening) {
-            scale = 1 + currentVolume * 0.5;
-            distortion = currentVolume * 10;
-        } else {
-            scale = 1 + Math.sin(time * 2) * 0.04;
-            distortion = 2;
+        const time = Date.now() / 280;
+        const barCount = frontBars.length;
+        const center = barCount / 2;
+        
+        // Update background reactive glow
+        const intensity = 0.08 + currentVolume * 0.5;
+        voiceModeDiv.style.background = `radial-gradient(circle at center, rgba(255, 0, 110, ${intensity}), #000000)`;
+        
+        for (let i = 0; i < barCount; i++) {
+            let baseHeight = 8;
+            if (speaking) {
+                const pulse = Math.sin(time * 16 + i * 0.3) * 0.7 + 0.7;
+                baseHeight = 30 + pulse * 58;
+            } else if (listening) {
+                const volFactor = Math.min(1, currentVolume * 1.7);
+                const phase = Math.sin(time * 8 + i * 0.45) * 0.3;
+                baseHeight = 14 + (volFactor * 78) + (phase * 18);
+            } else {
+                const breath = Math.sin(time * 1.6 + i * 0.2) * 0.5 + 0.7;
+                baseHeight = 12 + breath * 22;
+            }
+            
+            // Center emphasis (Siri secret)
+            const distance = Math.abs(i - center) / center;
+            const centerWeight = 1 - Math.min(0.85, distance * 0.85);
+            let targetHeight = baseHeight * (0.65 + centerWeight * 0.7);
+            
+            // Motion flow (wave left-right)
+            const flow = Math.sin(time * 6 + i * 0.6) * 14;
+            targetHeight += flow;
+            
+            // Idle intelligence: subtle micro-motion even when silent
+            const idleWave = Math.sin(time * 1.2 + i * 0.25) * 5;
+            targetHeight += idleWave;
+            
+            targetHeight = Math.min(110, Math.max(6, targetHeight));
+            
+            // Apply to layers with different scales
+            const backHeight = targetHeight * 0.55;
+            const midHeight = targetHeight * 0.78;
+            const frontHeight = targetHeight;
+            
+            if (backBars[i]) backBars[i].style.height = `${Math.max(4, backHeight)}px`;
+            if (midBars[i]) midBars[i].style.height = `${Math.max(5, midHeight)}px`;
+            if (frontBars[i]) frontBars[i].style.height = `${Math.max(6, frontHeight)}px`;
+            
+            // Gradient variation per bar
+            const hueShift = i * 2.5;
+            const gradStart = `hsl(${330 + hueShift}, 100%, 60%)`;
+            const gradEnd = `hsl(${270 + hueShift * 0.7}, 85%, 55%)`;
+            const gradientStyle = `linear-gradient(180deg, ${gradStart}, ${gradEnd})`;
+            if (frontBars[i]) frontBars[i].style.background = gradientStyle;
+            if (midBars[i]) midBars[i].style.background = gradientStyle;
+            if (backBars[i]) backBars[i].style.background = gradientStyle;
+            
+            // Dynamic glow based on volume
+            let glowIntensity = 6;
+            if (speaking) glowIntensity = 22 + Math.sin(time * 22) * 8;
+            else if (listening) glowIntensity = 10 + currentVolume * 55;
+            else glowIntensity = 6 + Math.sin(time * 2) * 4;
+            const glowColor = `rgba(255, 0, 110, ${0.5 + Math.min(0.5, currentVolume * 0.8)})`;
+            const shadow = `0 0 ${glowIntensity}px ${glowColor}, 0 0 ${glowIntensity * 0.6}px #8338ec`;
+            if (frontBars[i]) frontBars[i].style.boxShadow = shadow;
+            if (midBars[i]) midBars[i].style.boxShadow = shadow;
+            if (backBars[i]) backBars[i].style.boxShadow = shadow;
         }
-        // liquid border radius
-        const borderRadius = `${50 + Math.sin(time) * distortion}% ${50 + Math.cos(time) * distortion}%`;
-        orb.style.transform = `scale(${scale})`;
-        orb.style.borderRadius = borderRadius;
-        // subtle hue shift
-        const hue = (time * 40) % 360;
-        orb.style.filter = `hue-rotate(${hue}deg)`;
-        // intelligent glow based on state
-        let glow;
-        if (speaking) {
-            glow = `0 0 60px rgba(255,0,110,0.9), 0 0 120px rgba(131,56,236,0.8)`;
-        } else if (listening) {
-            glow = `0 0 ${40 + currentVolume * 60}px rgba(255,0,110,0.7)`;
-        } else {
-            glow = `0 0 30px rgba(131,56,236,0.4)`;
-        }
-        orb.style.boxShadow = glow;
-        animationFrameId = requestAnimationFrame(animateOrb);
+        barsAnimationFrameId = requestAnimationFrame(animateBars);
     }
 
     async function requestMicAccess() {
@@ -447,7 +560,7 @@
             analyser.getByteFrequencyData(dataArray);
             let sum = 0; for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
             let avg = sum / dataArray.length;
-            currentVolume = Math.min(1, avg / 60);
+            currentVolume = Math.min(1, avg / 70);
             requestAnimationFrame(updateVolumeLoop);
         }
         updateVolumeLoop();
@@ -457,22 +570,17 @@
         if (mediaStream) mediaStream.getTracks().forEach(track => { if (track.enabled) track.enabled = !mute; });
     }
     
-    // 🔥 UPDATED: INSTANT VOICE FLOW (no artificial delays)
     async function handleVoiceInput(transcript) {
         if (!voiceActive || speaking || processing) return;
         processing = true;
         listening = false;
         if (recognition) try { recognition.stop(); } catch(e) {}
         muteMicWhileSpeaking(true);
-        voiceStatusSpan.innerHTML = "🧠 Thinking...";
-        // add user message
+        voiceStatusSpan.innerHTML = "Thinking...";
         addMessage('user', transcript);
         const aiReply = getAIResponse(transcript);
-        // SPEAK IMMEDIATELY (zero lag)
         speakNow(aiReply);
-        // add assistant message (appears while speaking)
         await addMessage('assistant', aiReply);
-        // processing flag will be cleared in speakNow onend
     }
     
     function initRecognition() {
@@ -482,7 +590,7 @@
         recog.lang = "en-IN";
         recog.interimResults = false;
         recog.continuous = false;
-        recog.onstart = () => { if (voiceActive && !speaking) { listening = true; voiceStatusSpan.innerHTML = "🎤 Listening..."; } };
+        recog.onstart = () => { if (voiceActive && !speaking) { listening = true; voiceStatusSpan.innerHTML = "Listening..."; } };
         recog.onresult = (event) => {
             if (!voiceActive || speaking || processing) return;
             const transcript = event.results[0][0].transcript.trim();
@@ -503,28 +611,30 @@
         micHelpDiv.style.display = 'none';
         document.querySelector('.chat-messages').style.display = 'none';
         document.querySelector('.input-area').style.display = 'none';
-        const voiceModeDiv = document.getElementById('voiceMode');
         voiceModeDiv.style.display = 'flex';
         voiceActive = true; speaking = false; processing = false; listening = false;
+        createBars();
         startVolumeMeter();
         recognition = initRecognition();
         if (!recognition) { exitVoiceMode(); showToast("Voice not supported", true); return; }
-        try { recognition.start(); listening = true; voiceStatusSpan.innerHTML = "🎤 Listening..."; } catch(e) { console.warn(e); }
-        animateOrb();
+        try { recognition.start(); listening = true; voiceStatusSpan.innerHTML = "Listening..."; } catch(e) { console.warn(e); }
+        animateBars();
     }
     
     function exitVoiceMode() {
         voiceActive = false;
         if (recognition) { try { recognition.stop(); } catch(e) {} recognition = null; }
         if (window.speechSynthesis) window.speechSynthesis.cancel();
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        if (barsAnimationFrameId) cancelAnimationFrame(barsAnimationFrameId);
         if (audioCtx) audioCtx.close();
         if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
         analyser = null; sourceNode = null;
         listening = false; speaking = false; processing = false;
+        backBars = []; midBars = []; frontBars = [];
         document.querySelector('.chat-messages').style.display = 'flex';
         document.querySelector('.input-area').style.display = 'block';
-        document.getElementById('voiceMode').style.display = 'none';
+        voiceModeDiv.style.display = 'none';
+        voiceModeDiv.style.background = ''; // reset
         document.getElementById('messageInput').focus();
         showToast("Voice mode exited");
     }
